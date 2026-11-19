@@ -69,9 +69,17 @@ describe('aucun texte codé en dur dans l’interface', () => {
     expect(offenders).toEqual([]);
   });
   it('index.html ne contient pas de texte d’interface (hors <noscript> et <title>)', () => {
-    const html = readFileSync('index.html', 'utf8').replace(/<noscript>[\s\S]*?<\/noscript>/, '').replace(/<title>[\s\S]*?<\/title>/, '');
-    const body = /<body>([\s\S]*)<\/body>/.exec(html)![1]!.replace(/<[^>]+>/g, '').trim();
-    expect(body).toBe('');
+    const html = readFileSync('index.html', 'utf8');
+    const body = /<body>([\s\S]*)<\/body>/.exec(html)![1]!;
+    // Le corps ne doit contenir QUE ces trois éléments (le texte vient entièrement de i18n/).
+    const lines = body
+      .split('\n')
+      .map((l) => l.trim())
+      .filter(Boolean);
+    expect(lines).toHaveLength(3);
+    expect(lines[0]).toBe('<div id="app"></div>');
+    expect(lines[1]!.startsWith('<noscript>')).toBe(true);
+    expect(lines[2]).toBe('<script type="module" src="/src/main.ts"></script>');
   });
 });
 

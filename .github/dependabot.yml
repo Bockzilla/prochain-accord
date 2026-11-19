@@ -8,6 +8,16 @@ updates:
     cooldown:
       default-days: 7
     open-pull-requests-limit: 5
+    ignore:
+      # Vite 8 entraîne lightningcss (licence MPL-2.0, hors liste autorisée) — voir DEPENDENCIES.md.
+      - dependency-name: vite
+        versions: ['>=8.0.0']
+      # TypeScript 7 tire 20 binaires natifs ; la 6.x suffit (zéro dépendance) — voir DEPENDENCIES.md.
+      - dependency-name: typescript
+        versions: ['>=7.0.0']
+      # Les types Node doivent suivre la version de Node utilisée (24).
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
   - package-ecosystem: github-actions
     directory: /
     schedule:
