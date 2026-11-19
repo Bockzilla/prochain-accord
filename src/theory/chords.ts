@@ -1,10 +1,12 @@
 import { mod12, type PitchClass } from './notes';
 
-export type ChordQuality = 'maj' | 'min' | '7' | 'maj7' | 'm7' | 'sus2' | 'sus4';
+export type ChordQuality = 'maj' | 'min' | '7' | 'maj7' | 'm7' | 'sus2' | 'sus4' | 'dim';
 
 export const BASIC_QUALITIES: ChordQuality[] = ['maj', 'min'];
 export const EXTENDED_QUALITIES: ChordQuality[] = ['7', 'maj7', 'm7', 'sus2', 'sus4'];
 export const ALL_QUALITIES: ChordQuality[] = [...BASIC_QUALITIES, ...EXTENDED_QUALITIES];
+/** Qualités affichables (théorie, doigtés) ; « dim » n'est pas détecté au micro. */
+export const DISPLAY_QUALITIES: ChordQuality[] = [...ALL_QUALITIES, 'dim'];
 
 /** Intervalles en demi-tons depuis la fondamentale. */
 export const QUALITY_INTERVALS: Record<ChordQuality, readonly number[]> = {
@@ -15,6 +17,7 @@ export const QUALITY_INTERVALS: Record<ChordQuality, readonly number[]> = {
   m7: [0, 3, 7, 10],
   sus2: [0, 2, 7],
   sus4: [0, 5, 7],
+  dim: [0, 3, 6],
 };
 
 /** Suffixe affiché après le nom de la fondamentale (identique dans toutes les langues). */
@@ -26,6 +29,7 @@ export const QUALITY_SUFFIX: Record<ChordQuality, string> = {
   m7: 'm7',
   sus2: 'sus2',
   sus4: 'sus4',
+  dim: '°',
 };
 
 export interface Chord {
@@ -56,5 +60,5 @@ export function commonTones(a: Chord, b: Chord): number {
 
 /** Couleur de base : majeur-ish (maj, 7, maj7, sus) ou mineur-ish (min, m7). */
 export function isMinorish(q: ChordQuality): boolean {
-  return q === 'min' || q === 'm7';
+  return q === 'min' || q === 'm7' || q === 'dim';
 }

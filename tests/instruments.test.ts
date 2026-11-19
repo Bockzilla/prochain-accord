@@ -6,7 +6,7 @@ import { GUITAR, MANDOLIN, type Fingering, type FrettedInstrument } from '../src
 import { pianoInversions, PIANO_HIGH, PIANO_LOW } from '../src/instruments/piano';
 import { chordPositions, parseFrets } from '../src/instruments/positions';
 import { fretSpan, rootInBass, soundingMidi, validateFingering } from '../src/instruments/validate';
-import { ALL_QUALITIES, chord, chordPitchClasses, type Chord } from '../src/theory/chords';
+import { DISPLAY_QUALITIES as ALL_QUALITIES, chord, chordPitchClasses, type Chord } from '../src/theory/chords';
 import { mod12 } from '../src/theory/notes';
 
 const allChords: Chord[] = [];

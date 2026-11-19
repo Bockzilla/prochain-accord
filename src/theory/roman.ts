@@ -14,6 +14,7 @@ const QUALITY_MARK: Record<Chord['quality'], string> = {
   m7: '7',
   sus2: 'sus2',
   sus4: 'sus4',
+  dim: '°',
 };
 
 /** Chiffre romain d'un accord dans une tonalité : « IV », « vi », « bVII », « V7 »… */
