@@ -67,6 +67,11 @@ export class MetronomeController {
     this.vibrate = s.vibrate;
   }
 
+  /** Retard d'affichage (s) : latence de sortie + décalage réglé (écouteurs Bluetooth). */
+  get visualDelay(): number {
+    return this.engine.outputLatency + this.latencyMs / 1000;
+  }
+
   get groupStarts(): Set<number> {
     return groupStarts(this.scheduler.config.signature);
   }

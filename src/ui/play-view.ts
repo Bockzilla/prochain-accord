@@ -46,7 +46,10 @@ export class PlayView {
   }
 
   /** L'accordeur ne mesure que lorsqu'il est visible. */
+  onWorldVisible: ((v: boolean) => void) | null = null;
+
   syncActive(): void {
     this.tuner.setActive(!this.el.hidden && this.ctx.settings.playView === 'tuner');
+    this.onWorldVisible?.(!this.el.hidden && this.ctx.settings.playView === 'world');
   }
 }

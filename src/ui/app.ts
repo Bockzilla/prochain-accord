@@ -10,6 +10,10 @@ import { ALL_QUALITIES, BASIC_QUALITIES } from '../theory/chords';
 import { runCalibration } from './calibration-dialog';
 import { PlayView } from './play-view';
 import { TunerView } from './tuner-view';
+import { WorldView } from './world-view';
+import { ThemeEngine } from '../themes/engine';
+import { worldForStyle, WORLD_IDS, type WorldId } from '../themes/themes';
+import { sameChord } from '../theory/chords';
 import { AccompanimentController } from './accompaniment-controller';
 import { AccompanyView } from './accompany-view';
 import { ChordsView } from './chords-view';
@@ -74,6 +78,7 @@ export function startApp(root: HTMLElement): void {
           }
         : undefined;
       applyDetection();
+      themes.apply(currentWorld());
       wake.want(settings.wakeLock && (engine.micActive || metro.running));
       if (opts?.rerender) renderAll();
     },
@@ -86,7 +91,12 @@ export function startApp(root: HTMLElement): void {
   chordsView.onKeyChange = (key, conf, played) => shared.setDetected(key, conf, played);
   const ensureMic = async () => engine.micActive || (await chordsView.toggleMic(true));
   const tunerView = new TunerView(ctx, () => void chordsView.toggleMic(true));
-  const playView = new PlayView(ctx, chordsView, tunerView);
+  const themes = new ThemeEngine();
+  const currentWorld = (): WorldId => (settings.world === 'auto' ? worldForStyle(settings.music.style) : settings.world);
+  themes.apply(currentWorld());
+  const worldView = new WorldView(ctx, shared, themes, () => engine.ctx.currentTime - metro.visualDelay, () => metro.running);
+  const playView = new PlayView(ctx, chordsView, tunerView, worldView.el);
+  playView.onWorldVisible = (v) => worldView.setVisible(v && document.visibilityState === 'visible');
   const metroView = new MetronomeView(ctx);
   const improviseView = new ImproviseView(ctx, shared);
   const accompanyView = new AccompanyView(ctx, shared, acc, metroView);
@@ -104,6 +114,31 @@ export function startApp(root: HTMLElement): void {
     },
   });
   shared.on(() => ctx.commit());
+  // Mascotte : chaque temps du métronome (déjà aligné sur l'horloge d'affichage).
+  metro.onVisual((e) => worldView.onBeat(e));
+  metro.onState((running) => {
+    if (!running) worldView.onStop();
+  });
+  // Le monde suit l'accord joué…
+  chordsView.onChordPlayed = (c) => {
+    worldView.follow(c, shared.key);
+    // …et fête l'accord juste quand on joue avec la boucle (casque / interface).
+    const bandChord = acc.state === 'playing' && acc.currentIndex >= 0 ? acc.loop[acc.currentIndex] : null;
+    if (bandChord && settings.music.output !== 'speaker' && sameChord(bandChord, c)) worldView.celebrate();
+  };
+  // …et les changements d'accord de l'accompagnement.
+  let lastBandIndex = -1;
+  acc.on(() => {
+    if (acc.state !== 'playing' || acc.countingIn) {
+      lastBandIndex = -1;
+      return;
+    }
+    if (acc.currentIndex !== lastBandIndex && acc.currentIndex >= 0) {
+      lastBandIndex = acc.currentIndex;
+      const c = acc.loop[acc.currentIndex];
+      if (c && !engine.micActive) worldView.follow(c, acc.loopKey);
+    }
+  });
   metro.onState(() => {
     chordsView.renderHint();
     ctx.commit();
@@ -137,6 +172,7 @@ export function startApp(root: HTMLElement): void {
     for (const s of SPACES) views[s.id].el.hidden = s.id !== sp;
     if (sp !== 'play') views[sp].render();
     playView.syncActive();
+    worldView.setVisible(sp === 'play' && settings.playView === 'world' && document.visibilityState === 'visible');
     // La barre compacte (métronome) reste disponible partout sauf dans « Accompagner », qui a ses commandes.
     footer.hidden = sp === 'accompany';
     saveSettings(settings);
@@ -244,6 +280,10 @@ export function startApp(root: HTMLElement): void {
       field(t('settings.latency'), num(s.latencyMs, -100, 500, 5, (v) => ((s.latencyMs = v), metro.apply(s), ctx.commit()))),
       h('p', { class: 'small', text: t('settings.latencyHelp') }),
       check(t('settings.alignHistory'), s.alignHistory, (v) => ((s.alignHistory = v), rerender())),
+      h('h3', { text: t('settings.worlds') }),
+      field(t('settings.world'), select<string>(s.world, [{ v: 'auto', label: t('world.auto') }, ...WORLD_IDS.map((v) => ({ v, label: t(`worldName.${v}`) }))], (v) => ((s.world = v as typeof s.world), ctx.commit()))),
+      h('p', { class: 'small', text: t('settings.worldHelp') }),
+      check(t('settings.lowPower'), s.lowPower, (v) => ((s.lowPower = v), ctx.commit({ rerender: true }))),
       check(t('settings.wakeLock'), s.wakeLock, (v) => ((s.wakeLock = v), ctx.commit())),
       check(t('settings.debug'), s.debug, (v) => ((s.debug = v), rerender())),
       h('p', { class: 'small', text: t('settings.privacy') }),
@@ -285,5 +325,6 @@ export function startApp(root: HTMLElement): void {
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden' && acc.state === 'playing') acc.pause();
     if (document.visibilityState === 'visible') ctx.commit();
+    worldView.setVisible(document.visibilityState === 'visible' && settings.space === 'play' && settings.playView === 'world');
   });
 }

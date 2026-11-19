@@ -9,6 +9,8 @@ import { chordName, defaultNotation, pcName } from '../src/i18n/notation';
 import { chord } from '../src/theory/chords';
 import { PROGRESSIONS, STYLES } from '../src/theory/harmony';
 import { SCALE_TYPES } from '../src/theory/scales';
+import { EDGE_KINDS } from '../src/theory/world-graph';
+import { WORLD_IDS } from '../src/themes/themes';
 
 function files(dir: string): string[] {
   return readdirSync(dir).flatMap((n) => {
@@ -62,6 +64,8 @@ describe('fichiers de langue', () => {
       ...['good', 'fair', 'poor'].map((x) => `calib.quality.${x}`),
       ...['tooQuiet', 'clipping', 'noisyRoom', 'unclearChord', 'allGood', 'tryInterface'].map((x) => `calib.advice.${x}`),
       ...['guitar', 'chromatic'].map((x) => `tuner.mode.${x}`),
+      ...EDGE_KINDS.flatMap((x) => [`edge.${x}`, `edgeWhy.${x}`]),
+      ...WORLD_IDS.map((x) => `worldName.${x}`),
     ];
     for (const k of [...used, ...dyn]) expect(fr, k).toHaveProperty([k]);
   });
