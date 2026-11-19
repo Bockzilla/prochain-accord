@@ -38,63 +38,80 @@ Constats de la phase A :
 
 ## Phase B — Univers harmonique
 
-| Fonction | Statut | Remarque |
-|---|---|---|
-| Graphe harmonique cyclique et extensible (pur, testé) | TO_BUILD | diatonique, dominantes, relatifs, modulations, notes communes, emprunts, résolutions |
-| Fenêtre bornée (pas de nœuds illimités) | TO_BUILD | |
-| Rendu 2,5D en îlots, chemins typés | TO_BUILD | |
-| Sélection, voisins, retour arrière, recentrage, historique | TO_BUILD | |
-| Navigation tactile et souris | TO_BUILD | |
-| Suivi de l'accord détecté au micro | TO_BUILD | |
+| Fonction | Statut | Preuve / remarque | Réel |
+|---|---|---|---|
+| Graphe cyclique et extensible (pur) | TESTED | `tests/world-graph.test.ts` : chaque relation vérifiée pour tout accord et toute tonalité ; retour possible au départ ; l'exploration atteint les 12 fondamentales et les 12 tonalités | |
+| Relations : diatonique, dominante, résolution, relatif, notes communes, emprunt, modulation (accord pivot) | TESTED | idem ; exemples G → C (résolution), C → Am (relatif), C → B♭ (emprunt) | |
+| Fenêtre bornée | TESTED | au plus 19 îlots (centre + 8 voisins + 10 en aperçu) ; 9 au plus sur téléphone | |
+| Rendu 2,5D, chemins typés (icône + motif de trait) | TESTED (visuel) | revue en desktop et mobile ; îlots répartis en créneaux réguliers, sans chevauchement | à juger |
+| Sélection, retour, recentrage, historique | TESTED | navigateur : Am → E7 (dominante) → Am (résolution), puis Retour → E7 ; historique cliquable | |
+| Navigation tactile et souris (toucher, glisser) | IN_PROGRESS | événements pointeur ; glissement vérifié par le code, pas sur un vrai écran tactile | à tester |
+| Le monde suit l'accord détecté au micro | TESTED | navigateur : signal de test C → G → Am, le monde suit (historique Am → C → G → Am) | à tester |
+| Le monde suit l'accompagnement | TESTED (logique) | change d'îlot à chaque changement d'accord de la boucle (micro coupé) | animation à voir |
 
-## Phase C — Mascotte
+## Phase C — Mascotte « Pik »
 
-| Fonction | Statut | Remarque |
-|---|---|---|
-| Personnage original, cartoon doux | TO_BUILD | |
-| Saut à chaque temps, numéro du temps, accent du temps 1 | TO_BUILD | sur l'horloge audio |
-| Saut vers une autre pastille au changement d'accord | TO_BUILD | |
-| Repos / déplacement / célébration | TO_BUILD | |
-| Aucune influence sur la précision audio | TO_BUILD | à prouver par test d'architecture |
+| Fonction | Statut | Preuve / remarque | Réel |
+|---|---|---|---|
+| Personnage original (médiator vivant, cartoon doux) | TESTED (visuel) | galerie `#galerie` | à juger |
+| Saut à chaque temps, impact exactement sur le temps, accent du temps 1 | TESTED (logique) | `tests/mascot-themes.test.ts` (pose à la phase 0, saut plus haut avant le temps 1) | **animation non vue** |
+| Numéro du temps au-dessus de la tête, accentué au temps 1 | IN_PROGRESS | code relié aux événements visuels du métronome ; non observé en mouvement (voir limite) | à voir |
+| Saut vers l'îlot suivant au changement d'accord | TESTED (logique) | décolle au temps suivant si le métronome tourne ; filet de sécurité si l'animation est suspendue | à voir |
+| Repos (respiration, clignement), célébration (résolution vers la tonique, bon accord joué sur la boucle) | IN_PROGRESS | code + test des poses ; non observé en mouvement | à voir |
+| Aucune influence sur la précision audio | TESTED | test d'architecture : `mascot/` et `themes/` n'importent aucun module audio et ne lisent pas l'horloge | |
+
+**Limite de vérification.** Le panneau navigateur de l'app était masqué pendant toute la session, et Chrome n'y lance aucune image d'animation (`requestAnimationFrame`). Les poses sont testées, et les images fixes ont été revues, mais **je n'ai pas vu Pik bouger en musique**.
 
 ## Phase D — Mondes musicaux
 
-| Fonction | Statut | Remarque |
-|---|---|---|
-| Moteur de thèmes indépendant de la musique | TO_BUILD | |
-| Blues, Rock, Folk, Country (décor, palette, particules, animation, costume) | TO_BUILD | prioritaires |
-| Jazz, Pop (thèmes visuels) | TO_BUILD | sans moteur d'accompagnement dédié |
-| Transition sans interrompre l'audio | TO_BUILD | |
-| Réduction des animations, mode économie | TO_BUILD | |
+| Fonction | Statut | Preuve / remarque | Réel |
+|---|---|---|---|
+| Moteur de thèmes indépendant de la musique | TESTED | test d'architecture (`themes/` sans dépendance musicale) | |
+| Blues, Rock, Folk, Country : décor, palette, textures, éclairage, îlots, chemins, particules, animation, costume, accents d'interface | TESTED (visuel) | revue des 4 mondes en desktop et en mobile, et des costumes en grand (galerie) ; corrigé : guitare de Pik cachée en Folk, feu de camp sous un îlot | à juger |
+| Jazz, Pop (thèmes visuels) | TESTED (visuel) | sans moteur d'accompagnement dédié (dit dans les réglages) | |
+| Caractères d'animation distincts | TESTED | 6 mouvements différents (Rock énergique sans balancement, Blues swing…) | à voir |
+| Contraste des accents et des étiquettes | TESTED | test WCAG ; corrigé : texte blanc sur rouge Rock (3,5:1 → 5,7:1), îlots Folk, flancs Pop | |
+| Transition sans interrompre l'audio | TESTED (logique) | le changement de monde ne touche que le DOM ; fondu du décor | |
+| Mouvement réduit, mode économie | TESTED (logique) | `prefers-reduced-motion` : particules et animations coupées ; mode économie : particules ÷ 3 | |
 
 ## Phase E — Improvisation intelligente
 
-| Fonction | Statut | Remarque |
-|---|---|---|
-| Détection monophonique des notes | TO_BUILD | même moteur YIN que l'accordeur |
-| Toutes les positions possibles d'une hauteur sur le manche | TO_BUILD | la corde exacte n'est pas déductible de la fréquence |
-| Hiérarchie visuelle : jouée > accord > position > voisines (±2 cases) > contexte | TO_BUILD | |
-| 5 positions pentatoniques distinguées visuellement | TO_BUILD | V2 : une position à la fois |
-| Notes cibles qui suivent l'accord de l'accompagnement | TO_BUILD | |
-| Explication « pourquoi ces notes » | TO_BUILD | |
+| Fonction | Statut | Preuve / remarque | Réel |
+|---|---|---|---|
+| Détection monophonique (YIN + suivi stabilisé) | TESTED | tests + navigateur : La3 +6 cents reconnu ; un accord ne produit aucune note | à tester |
+| Toutes les positions possibles d'une hauteur | TESTED | La3 = 4 positions (cases 17, 12, 7, 2) ; la corde exacte n'est jamais « devinée » | |
+| Hiérarchie : jouée > accord > position > voisines (±2 cases) > contexte | TESTED | test + navigateur (12 / 10 / 26 notes selon les niveaux) | |
+| 5 positions distinguées (règle colorée et numérotée) | TESTED (visuel) | revue mobile | |
+| Notes cibles qui suivent l'accord de l'accompagnement | TESTED (logique) | test « Am → F » ; mise à jour à chaque changement d'accord de la boucle | à voir en direct |
+| Explication « pourquoi ces notes » | TESTED | texte des notes cibles, y compris les notes de l'accord hors gamme | |
+| Note hors gamme signalée | TESTED | navigateur : La♯3 → « hors gamme : à utiliser en passage » | |
 
 ## Phase F — Intégration
 
 | Fonction | Statut | Remarque |
 |---|---|---|
-| Jouer = monde + détection + accordeur | TO_BUILD | |
-| Accompagnement audible pendant le monde ou le manche | EXISTS | horloge partagée (V2, testé) |
-| Responsive mobile / desktop, tactile | TO_BUILD | |
-| Accessibilité (contraste, formes, mouvement réduit) | TO_BUILD | |
+| Jouer = Monde + Accordeur, détection dessous | TESTED | les cartes vides n'apparaissent qu'au premier accord |
+| Micro global (bouton dans l'en-tête), entre les espaces | TESTED (logique) | |
+| Responsive mobile / desktop | TESTED (visuel) | disposition compacte du monde sous 640 px ; aucun défilement horizontal de la page |
+| Performance | TESTED | mesuré (ordinateur) : analyse d'accord 0,5 ms par trame ; YIN 0,65 ms après décimation (3,4 ms avant) ; fenêtre du monde 0,1 ms. Animations et particules seulement quand le monde est visible |
 
 ## Phase G — Validation
 
 | Fonction | Statut | Remarque |
 |---|---|---|
-| Tests existants intacts + nouveaux tests | TO_BUILD | |
-| Revue visuelle desktop + mobile, 4 mondes, costumes | TO_BUILD | |
-| Sécurité (CSP, audit, CodeQL), hors ligne | EXISTS | à re-vérifier |
-| Déploiement | TO_BUILD | |
+| Tests | TESTED | voir le rapport final (nombre de tests) |
+| Sécurité (CSP, audit npm, OSV, CodeQL), zéro dépendance ajoutée | TESTED | aucune nouvelle dépendance ; CodeQL relancé en CI |
+| Hors ligne | TESTED | service worker inchangé (correctif V2 conservé) |
+| Déploiement | voir le rapport final | |
+
+## Reporté explicitement (DEFERRED)
+
+| Fonction | Raison |
+|---|---|
+| Moteurs d'accompagnement Jazz et Pop | Thèmes visuels prêts ; motifs rythmiques et harmonie jazz (II-V-I, swing, accords enrichis) à concevoir |
+| Suppression parfaite de l'accompagnement dans le micro (haut-parleur) | Impossible de façon fiable dans un navigateur : comportement explicite + annulation d'écho optionnelle à la place |
+| Corde exacte d'une note jouée | Impossible à partir de la seule fréquence ; on affiche toutes les positions possibles |
+| Moteur 3D (WebGL) | Non justifié : le rendu SVG/Canvas 2,5D suffit, plus léger pour la batterie |
 
 ## Acquis V1–V2 conservés
 

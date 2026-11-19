@@ -19,7 +19,17 @@ export interface PitchResult {
   rms: number;
 }
 
-export function yinPitch(x: Float32Array | Float64Array, sampleRate: number, opts: PitchOptions = DEFAULT_PITCH): PitchResult | null {
+export function yinPitch(input: Float32Array | Float64Array, inputRate: number, opts: PitchOptions = DEFAULT_PITCH): PitchResult | null {
+  // Décimation par 2 au-delà de 32 kHz : les notes de guitare restent sous 1,4 kHz,
+  // et le calcul (quadratique) devient environ 4 fois moins coûteux (batterie).
+  let x: Float32Array | Float64Array = input;
+  let sampleRate = inputRate;
+  if (inputRate > 32000) {
+    const half = new Float64Array(input.length >> 1);
+    for (let i = 0; i < half.length; i++) half[i] = 0.5 * (input[2 * i]! + input[2 * i + 1]!);
+    x = half;
+    sampleRate = inputRate / 2;
+  }
   const n = x.length;
   let rmsAcc = 0;
   for (let i = 0; i < n; i++) rmsAcc += x[i]! * x[i]!;

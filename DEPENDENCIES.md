@@ -2,7 +2,7 @@
 
 > **Important — auto-vérification.** Cet audit a été réalisé par l'assistant qui a écrit le code. Ce n'est **pas** une revue de sécurité indépendante. Il vérifie des points concrets et reproductibles (licences, scripts d'installation, appels réseau, versions), mais ne remplace pas l'avis d'un tiers.
 
-Dernière mise à jour : 2026-11-19 (V2 : aucune dépendance ajoutée).
+Dernière mise à jour : 2026-11-19 (V3 : aucune dépendance ajoutée — univers, mascotte, thèmes, accordeur et détection de notes sont en code maison).
 
 ## Résumé
 
@@ -16,7 +16,7 @@ Dernière mise à jour : 2026-11-19 (V2 : aucune dépendance ajoutée).
 | Scripts d'installation exécutés | aucun (`ignore-scripts=true` dans `.npmrc`, `npm ci --ignore-scripts` en CI) |
 | CDN à l'exécution | aucun — tout est empaqueté, vérifié par la CSP `default-src 'self'` |
 
-Le bundle final (`dist/assets/index-*.js`, ~144 Ko, 46 Ko compressé, V2 incluse) ne contient que du code maison : aucun `fetch`, `XMLHttpRequest`, `WebSocket`, `eval` ni `new Function` (vérifié par recherche dans le fichier produit et par le test `tests/architecture.test.ts` sur le code source).
+Le bundle final (`dist/assets/index-*.js`, ~215 Ko, 70 Ko compressé, V3 incluse) ne contient que du code maison : aucun `fetch`, `XMLHttpRequest`, `WebSocket`, `eval` ni `new Function` (vérifié par recherche dans le fichier produit et par le test `tests/architecture.test.ts` sur le code source).
 
 ## Dépendances retenues (développement uniquement)
 

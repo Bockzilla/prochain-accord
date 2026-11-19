@@ -16,3 +16,5 @@ Chaque fichier décrit une décision : le contexte, le choix, et ses conséquenc
 | [010](010-separation-des-sources-et-arriere-plan.md) | Accompagnement et micro : pause de détection ; pause en arrière-plan |
 | [011](011-analyse-prudente-et-gammes-calculees.md) | Analyse harmonique prudente, gammes et positions calculées |
 | [012](012-hors-ligne-ignore-vary.md) | Correctif hors ligne (`ignoreVary`) |
+| [013](013-univers-mascotte-themes.md) | Univers harmonique, mascotte et mondes : SVG + Canvas, sans moteur 3D |
+| [014](014-accordeur-profils-calibration.md) | Accordeur YIN, profils mesurés, calibration, entrées audio |

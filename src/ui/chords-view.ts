@@ -70,12 +70,16 @@ export class ChordsView {
       ]),
       this.hint,
       this.pauseNote,
+      this.moreBox,
+      this.debugBox,
+    );
+    // Doigté, suggestions et historique n'apparaissent qu'au premier accord (écran simple au départ).
+    this.moreBox.replaceChildren(
       h('div', { class: 'diagram-card card' }, [this.diagramBox]),
       h('h2', { text: t('suggestions.title') }),
       this.suggestionsBox,
       h('h2', { text: t('history.title') }),
       this.historyBox,
-      this.debugBox,
     );
     this.pauseNote.textContent = t('play.speakerNotice');
     this.echoNote.textContent = t('play.echo');
@@ -137,7 +141,10 @@ export class ChordsView {
     return this.preview ?? this.shown ?? this.last;
   }
 
+  private moreBox = h('div', { class: 'play-more' });
+
   private renderNow(): void {
+    this.moreBox.hidden = !(this.history.length || this.shown || this.last || this.preview);
     const c = this.shown;
     const key = this.suggest?.key ?? null;
     this.bigName.textContent = c ? nameOf(this.ctx, c, key) : '…';
@@ -351,7 +358,9 @@ export class ChordsView {
     );
   }
 
+  /** Analyse dès qu'un signal récent arrive : micro, interface audio ou signal de test. */
   get analysisActive(): boolean {
-    return this.ctx.engine.micActive || this.testSignal.playing;
+    const e = this.ctx.engine;
+    return e.micActive || this.testSignal.playing || e.ring.lastFrame > (e.ctx.currentTime - 0.3) * e.sampleRate;
   }
 }

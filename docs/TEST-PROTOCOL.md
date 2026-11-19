@@ -1,4 +1,4 @@
-# Protocole de test réel — environ 20 minutes, avec une vraie guitare
+# Protocole de test réel — environ 30 minutes, avec une vraie guitare
 
 Les tests automatiques utilisent des **signaux synthétiques** : ils ne remplacent pas une vraie guitare, un vrai micro de téléphone et une vraie pièce. Ce protocole sert à le vérifier. Notez les résultats dans le tableau à la fin.
 
@@ -70,6 +70,34 @@ Tapez « Am F C G » puis Analyser : l'app doit dire « Ambigu : C majeur ou A m
 
 Ouvrez l'app une fois en ligne, passez en **mode avion**, fermez puis rouvrez l'app : les 4 espaces doivent fonctionner (la toute première ouverture exige Internet).
 
+## J. Accordeur (2 min)
+
+1. Jouer → **Accordeur**, mode Guitare.
+2. Jouez chaque corde à vide. L'aiguille doit être stable, la bonne corde doit s'allumer, et le vert doit apparaître quand c'est juste.
+3. Désaccordez légèrement une corde : l'aiguille doit dévier dans le bon sens (« Trop bas » / « Trop haut »).
+4. Grattez un accord : l'accordeur doit l'ignorer (pas d'aiguille qui saute).
+5. Comparez avec un accordeur de confiance : notez l'écart sur la corde de La.
+
+## K. Calibration et profils (3 min)
+
+1. Réglages → **Calibrer l'écoute** : suivez les étapes (silence, puis un accord). Notez la qualité et le profil recommandé.
+2. Jouez C – G – Am – F avec chacun des 3 profils (Réglages → Réactivité) : lequel affiche le plus vite ? Lequel « saute » le moins ?
+3. Avec une **interface audio** (ex. PreSonus) : Réglages → Entrée audio, puis Canal d'entrée = entrée de la guitare. Le nombre de canaux reçus s'affiche-t-il ? La détection est-elle meilleure ?
+
+## L. Monde et mascotte (3 min)
+
+1. Jouer → **Monde**. Démarrez le métronome (barre du bas) : Pik doit sauter à chaque temps, l'impact **sur** le clic, plus haut avant le temps 1 ; le numéro du temps s'affiche au-dessus de sa tête.
+2. Touchez un îlot voisin : Pik doit y sauter au temps suivant, puis l'explication du chemin s'affiche.
+3. Jouez des accords à la guitare : le monde doit suivre.
+4. Accompagner → changez de style (Blues, Rock, Folk, Country) : le monde, le costume de Pik et les couleurs changent, **sans couper le son**.
+5. Ouvrez `…/prochain-accord/#galerie` pour revoir les 6 mondes en grand.
+
+## M. Improvisation guidée (3 min)
+
+1. Avec un casque, lancez le blues en La (Accompagner), puis ouvrez **Improviser**.
+2. Les notes de l'accord en cours doivent être cerclées, et changer à chaque changement d'accord.
+3. Jouez des notes une à une : la note s'allume avec toutes ses positions possibles, et l'app dit si elle est dans l'accord, dans la gamme, ou hors gamme.
+
 ## Résultats
 
 | Test | Résultat | Remarques |
@@ -87,5 +115,12 @@ Ouvrez l'app une fois en ligne, passez en **mode avion**, fermez puis rouvrez l'
 | G — ressenti musical de l'accompagnement (1 à 5) | | |
 | H — Am F C G ambigu ; Am Dm E Am = La mineur | | |
 | I — fonctionne en mode avion | | |
+| J — accordeur : écart avec un accordeur de référence (cents) | | |
+| K — calibration : qualité, profil recommandé | | |
+| K — profil le plus agréable à l'usage | | |
+| K — interface audio : canaux reçus, détection | | |
+| L — Pik synchro avec le clic (oui / décalé / non) | | |
+| L — changement de monde sans coupure du son | | |
+| M — notes cibles qui suivent l'accord ; note jouée reconnue | | |
 
 Envoyez-moi ce tableau : il dira où ajuster (seuils de confiance, sensibilité, fenêtre autour des clics).
