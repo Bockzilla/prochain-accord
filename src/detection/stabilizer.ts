@@ -5,6 +5,8 @@ export interface StabilizerOptions {
   holdMs: number;
   /** En dessous de cette confiance, la trame compte comme « aucun accord ». */
   minConfidence: number;
+  /** Coupure brève (trame ratée, rafale de bruit) tolérée sans effacer l'accord en attente (ms). */
+  gapToleranceMs?: number;
 }
 
 export interface StableState {
@@ -23,6 +25,7 @@ export interface StableState {
 export class ChordStabilizer {
   private pending: Chord | null = null;
   private pendingSince = 0;
+  private pendingLastSeen = 0;
   private shown: Chord | null = null;
   private last: Chord | null = null;
 
@@ -40,11 +43,21 @@ export class ChordStabilizer {
 
   update(candidate: Chord | null, conf: number, timeMs: number): StableState {
     const cand = candidate && conf >= this.opts.minConfidence ? candidate : null;
+    // Trou bref dans un accord en attente : on l'ignore (l'accord continue de « compter »).
+    const gap = this.opts.gapToleranceMs ?? 0;
+    if (cand === null && this.pending !== null && timeMs - this.pendingLastSeen <= gap) {
+      return this.result(timeMs);
+    }
     const samePending = cand === null ? this.pending === null : sameChord(cand, this.pending);
     if (!samePending) {
       this.pending = cand;
       this.pendingSince = timeMs;
     }
+    if (cand) this.pendingLastSeen = timeMs;
+    return this.result(timeMs);
+  }
+
+  private result(timeMs: number): StableState {
     let changed = false;
     if (timeMs - this.pendingSince >= this.opts.holdMs) {
       const isNew = this.pending === null ? this.shown !== null : !sameChord(this.pending, this.shown);

@@ -5,6 +5,7 @@ import type { BeatState, Subdivision } from '../metronome/meter';
 import type { SoundId } from '../metronome/presets';
 import type { Volumes } from '../metronome/sounds';
 import type { AcceleratorConfig, SilentBarsConfig } from '../metronome/training';
+import type { ProfileId } from '../detection/profiles';
 import type { Style } from '../theory/harmony';
 import type { Mode } from '../theory/keys';
 import type { ScaleType } from '../theory/scales';
@@ -33,6 +34,20 @@ export interface Settings {
   inputDeviceId: string;
   /** Seuil de bruit adaptatif (reconnaissance adaptative). */
   adaptive: boolean;
+  /** Profil de réactivité de la reconnaissance. */
+  profile: ProfileId;
+  /** Canal analysé : -1 = mélange, 0 = entrée 1, 1 = entrée 2 (interface audio). */
+  inputChannel: -1 | 0 | 1;
+  /** Annulation d'écho du navigateur (utile seulement sur haut-parleur). */
+  echoCancellation: boolean;
+  /** Le micro reste ouvert d'un espace à l'autre, et est rouvert au lancement si possible. */
+  micWanted: boolean;
+  /** Monde visuel : 'auto' = suit le style d'accompagnement. */
+  world: 'auto' | 'blues' | 'rock' | 'folk' | 'country' | 'jazz' | 'pop';
+  /** Mode économie : moins de particules et d'effets (batterie). */
+  lowPower: boolean;
+  tuner: { mode: 'guitar' | 'chromatic' };
+  playView: 'world' | 'tuner';
   music: {
     /** 'auto' = tonalité estimée à partir des accords joués ; 'manual' = choisie. */
     keyMode: 'auto' | 'manual';
@@ -47,8 +62,10 @@ export interface Settings {
     progressionId: string;
     countIn: 0 | 1 | 2;
     volumes: { drums: number; comp: number; click: number };
-    /** L'utilisateur confirme porter des écouteurs : la détection reste active pendant l'accompagnement. */
+    /** Ancien réglage V2 (conservé pour la migration). */
     headphones: boolean;
+    /** Sortie du son : casque / interface audio = détection simultanée ; haut-parleur = comportement prudent. */
+    output: 'headphones' | 'interface' | 'speaker';
     accompanySection: 'loops' | 'metronome';
   };
   metro: {
@@ -83,6 +100,14 @@ export function defaultSettings(langs: readonly string[]): Settings {
     space: 'play',
     inputDeviceId: '',
     adaptive: true,
+    profile: 'balanced',
+    inputChannel: -1,
+    echoCancellation: false,
+    micWanted: false,
+    world: 'auto',
+    lowPower: false,
+    tuner: { mode: 'guitar' },
+    playView: 'world',
     music: {
       keyMode: 'auto',
       tonic: 9,
@@ -96,6 +121,7 @@ export function defaultSettings(langs: readonly string[]): Settings {
       countIn: 1,
       volumes: { drums: 0.7, comp: 0.7, click: 0 },
       headphones: false,
+      output: 'speaker',
       accompanySection: 'loops',
     },
     metro: {
@@ -132,8 +158,11 @@ export function loadSettings(langs: readonly string[]): Settings {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return d;
-    const s = merge(d, JSON.parse(raw));
+    const saved = JSON.parse(raw) as { music?: { headphones?: boolean; output?: string } };
+    const s = merge(d, saved);
     if (!LOCALES.includes(s.locale)) s.locale = d.locale;
+    // Migration V2 → V3 : « J'utilise des écouteurs » devient la sortie « casque ».
+    if (saved.music?.headphones && !saved.music.output) s.music.output = 'headphones';
     return s;
   } catch {
     return d;

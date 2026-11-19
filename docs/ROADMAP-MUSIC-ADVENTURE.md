@@ -18,19 +18,23 @@ Point de départ inspecté le 2026-11-19 : commit `913efce` (V2), 144 tests au v
 
 | Fonction | Statut | Preuve / remarque | Réel |
 |---|---|---|---|
-| Accordeur : fréquence fondamentale (YIN) | TO_BUILD | | à tester |
-| Accordeur : nom de note, écart en cents | TO_BUILD | | |
-| Accordeur : grande aiguille animée, zone verte | TO_BUILD | | |
-| Accordeur : modes guitare standard / chromatique | TO_BUILD | | |
-| Accordeur : A4 configurable (440 Hz par défaut) | EXISTS (réglage) | le réglage existe pour la détection d'accords | |
-| Accordeur : rejet des signaux instables | TO_BUILD | | |
-| Sélection de l'entrée audio (micro / USB) | EXISTS | V2, choix par `deviceId` ; pas de choix de canal | à tester (PreSonus) |
-| Choix du canal d'entrée (interface 2 canaux) | TO_BUILD | | à tester |
-| Calibration guidée (silence → accord → analyse → recommandation → application) | TO_BUILD | | à tester |
-| Profils RAPIDE / ÉQUILIBRÉ / STABLE | TO_BUILD | à mesurer sur signaux synthétiques | à tester |
-| Accompagnement + micro simultanés (casque / interface) | TO_BUILD | V2 : la détection se met en pause sans case « écouteurs » | à tester |
-| Comportement explicite sur haut-parleurs | TO_BUILD | | |
-| Micro disponible entre les espaces | EXISTS | moteur audio global ; à re-tester | |
+| Accordeur : fréquence fondamentale (YIN maison) | TESTED | `tests/pitch.test.ts` : 6 cordes à moins de 1 cent, sans erreur d'octave ; Mi2 à Mi5 avec bruit à moins de 3 cents | à tester |
+| Accordeur : nom de note, écart en cents | TESTED | navigateur : note de test Ré3 −20 cents → « D3, −20 cents » ; La2 +30 → « +30 » | |
+| Accordeur : grande aiguille animée, zone verte ±5 cents | TESTED | navigateur : aiguille à −24° pour −20 cents ; état « Juste ✓ » à 0 cent | animation à voir |
+| Accordeur : modes guitare standard / chromatique | TESTED | tests (corde visée) + navigateur (corde surlignée) | |
+| Accordeur : A4 configurable (440 Hz par défaut) | TESTED | test 432 Hz ; réglage dans l'accordeur | |
+| Accordeur : rejet des signaux instables | TESTED | tests (hauteur qui saute, accord, silence) ; navigateur : accord Do-Mi-Sol rejeté | |
+| Sélection de l'entrée audio (micro / USB) | EXISTS | V2, par `deviceId`, avec repli si l'appareil a disparu | à tester (PreSonus) |
+| Choix du canal d'entrée (interface 2 canaux) | IN_PROGRESS | worklet : canal 1, canal 2 ou mélange ; nombre de canaux reçus affiché. Non testable sans interface | à tester |
+| Calibration guidée (5 étapes réelles) | TESTED (logique) | `tests/profiles.test.ts` : qualité, profil, conseils, sensibilité. L'assistant mesure vraiment silence puis accord | à tester |
+| Profils RAPIDE / ÉQUILIBRÉ / STABLE | TESTED | **mesuré** sur signaux synthétiques : délai d'affichage RAPIDE 221–280 ms, ÉQUILIBRÉ 452–552 ms, STABLE 720–781 ms ; oscillation Am/C toutes les 250 ms : RAPIDE suit (16 changements), ÉQUILIBRÉ et STABLE tiennent (1). Bruit fort avec rafales : les 3 tiennent l'accord | à tester |
+| Accompagnement + micro simultanés (casque / interface) | TESTED (logique) | la détection ne se met plus en pause : sortie « casque » ou « interface » = détection pleine | à tester |
+| Comportement explicite sur haut-parleurs | TESTED (logique) | détection active ; un accord identique à celui de la boucle est signalé « ≈ accompagnement » et n'entre pas dans l'historique ; annulation d'écho du navigateur en option (imparfaite, dit comme tel) | à tester |
+| Micro disponible entre les espaces | TESTED (logique) | bouton micro global dans l'en-tête ; micro rouvert au premier geste si voulu | |
+
+Constats de la phase A :
+- Le premier réglage de STABLE (marge de bruit ×3,5, maintien strict de 600 ms) **n'affichait plus rien** dans le bruit. Corrigé avec une marge de ×2,5 et une tolérance aux coupures brèves (250 ms).
+- Dans mes signaux synthétiques, les rafales de bruit ne départagent pas les profils. Ce qui les distingue réellement, c'est le délai d'affichage et la tenue face aux fluctuations rapides.
 
 ## Phase B — Univers harmonique
 

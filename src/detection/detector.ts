@@ -3,6 +3,7 @@ import { analyzeFrame, DEFAULT_ANALYZE, type AnalyzeOptions, type FrameAnalysis 
 import { rms } from './chroma';
 import { ClickGate } from './click-gate';
 import { NoiseFloor } from './noise-floor';
+import { PROFILES, type DetectionProfile } from './profiles';
 import { ChordStabilizer, type StableState } from './stabilizer';
 
 export interface DetectorResult {
@@ -33,6 +34,16 @@ export class ChordDetector {
     public sampleRate: number,
     public frameSize = 8192,
   ) {}
+
+  profile: DetectionProfile = PROFILES.balanced;
+
+  /** Applique un profil de réactivité (taille de fenêtre, stabilisation, marge de bruit). */
+  applyProfile(p: DetectionProfile): void {
+    this.profile = p;
+    this.frameSize = p.frameSize;
+    this.stabilizer.setOptions({ holdMs: p.holdMs, minConfidence: p.minConfidence, gapToleranceMs: p.gapToleranceMs });
+    this.noise.setMargin(p.noiseMargin);
+  }
 
   step(ring: RingBuffer, nowMs: number): DetectorResult {
     const lastFrame = ring.lastFrame;

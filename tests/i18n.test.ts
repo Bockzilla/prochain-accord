@@ -57,6 +57,11 @@ describe('fichiers de langue', () => {
       ...['high', 'medium', 'low'].map((x) => `analysis.certainty.${x}`),
       ...['pentatonicSafe', 'fullScale', 'bluesColor', 'relativeSame', 'majorPentaOverDominant', 'mixolydianB7'].map((x) => `scaleReason.${x}`),
       ...['drums', 'comp', 'click'].map((x) => `accompany.vol.${x}`),
+      ...['fast', 'balanced', 'stable'].flatMap((x) => [`profile.${x}`, `profileHelp.${x}`]),
+      ...['headphones', 'interface', 'speaker'].flatMap((x) => [`output.${x}`, `outputHelp.${x}`]),
+      ...['good', 'fair', 'poor'].map((x) => `calib.quality.${x}`),
+      ...['tooQuiet', 'clipping', 'noisyRoom', 'unclearChord', 'allGood', 'tryInterface'].map((x) => `calib.advice.${x}`),
+      ...['guitar', 'chromatic'].map((x) => `tuner.mode.${x}`),
     ];
     for (const k of [...used, ...dyn]) expect(fr, k).toHaveProperty([k]);
   });

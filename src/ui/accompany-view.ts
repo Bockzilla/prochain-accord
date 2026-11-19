@@ -84,9 +84,10 @@ export class AccompanyView {
       });
       return h('label', { class: 'field' }, [h('span', { text: t(`accompany.vol.${key}`) }), inp]);
     };
-    const phones = h('input', { type: 'checkbox', checked: m.headphones });
-    phones.addEventListener('change', () => {
-      m.headphones = phones.checked;
+    const output = h('select', { 'aria-label': t('accompany.output') });
+    for (const o of ['headphones', 'interface', 'speaker'] as const) output.append(h('option', { value: o, text: t(`output.${o}`), selected: o === m.output }));
+    output.addEventListener('change', () => {
+      m.output = output.value as typeof m.output;
       this.ctx.commit();
       this.render();
     });
@@ -105,7 +106,7 @@ export class AccompanyView {
     setChildren(this.el, [
       seg,
       h('div', { class: 'card band-display' }, [this.nowChord, this.nextChord, this.strip, h('div', { class: 'row center' }, [this.playBtn, stop])]),
-      m.headphones ? null : h('p', { class: 'hint', text: t('accompany.phonesWarning') }),
+      m.output === 'speaker' ? h('p', { class: 'hint', text: t('accompany.speakerWarning') }) : null,
       h('div', { class: 'card' }, [
         h('div', { class: 'grid2' }, [h('label', { class: 'field' }, [h('span', { text: t('accompany.style') }), styleSel]), h('label', { class: 'field' }, [h('span', { text: t('accompany.progression') }), progSel])]),
         keyPicker(this.ctx, this.shared),
@@ -113,7 +114,7 @@ export class AccompanyView {
         h('label', { class: 'field' }, [h('span', { text: t('training.countIn') }), countIn]),
         h('p', { class: 'small', text: t(`styleExplain.${m.style}`) }),
       ]),
-      h('details', { class: 'card' }, [h('summary', { text: t('accompany.mix') }), vol('drums'), vol('comp'), vol('click'), h('label', { class: 'check' }, [phones, h('span', { text: t('accompany.headphones') })]), h('p', { class: 'small', text: t('accompany.phonesExplain') })]),
+      h('details', { class: 'card' }, [h('summary', { text: t('accompany.mix') }), vol('drums'), vol('comp'), vol('click'), h('label', { class: 'field' }, [h('span', { text: t('accompany.output') }), output]), h('p', { class: 'small', text: t(`outputHelp.${m.output}`) })]),
       h('p', { class: 'small', text: t('accompany.original') }),
     ]);
     this.renderLive();

@@ -1262,3 +1262,191 @@ svg .seg:focus-visible path {
   border-color: #fff;
   outline: 2px solid var(--accent);
 }
+
+/* ===================== V3 : accordeur, calibration ===================== */
+.row.tight {
+  gap: 0.35rem;
+  margin: 0;
+  flex-wrap: nowrap;
+}
+
+.mic-global.on {
+  background: var(--safe);
+  border-color: var(--safe);
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.25);
+}
+
+.tuner-card {
+  text-align: center;
+}
+
+svg.tuner-gauge {
+  width: min(92vw, 420px);
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+svg .g-track {
+  fill: none;
+  stroke: var(--panel-2);
+  stroke-width: 22;
+  stroke-linecap: round;
+}
+
+svg .g-zone {
+  fill: none;
+  stroke: var(--safe);
+  stroke-width: 22;
+}
+
+svg .g-tick {
+  stroke: #6b7380;
+  stroke-width: 2;
+}
+
+svg .g-tick.zero {
+  stroke: var(--text);
+  stroke-width: 3;
+}
+
+svg .g-label {
+  fill: var(--muted);
+  font-size: 12px;
+}
+
+svg .g-needle {
+  transform-origin: 150px 155px;
+  transform-box: view-box;
+  transition: transform 0.09s linear;
+}
+
+svg .g-needle line {
+  stroke: var(--accent);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+svg .g-needle circle {
+  fill: var(--accent);
+}
+
+svg .g-needle.ok line,
+svg .g-needle.ok circle {
+  stroke: var(--safe);
+  fill: var(--safe);
+}
+
+svg .g-needle.idle {
+  opacity: 0.35;
+}
+
+.tuner-note {
+  font-size: clamp(3.5rem, 18vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1;
+  margin-top: -0.4rem;
+}
+
+.tuner-cents {
+  font-size: 1.3rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  min-height: 1.5em;
+}
+
+.tuner-freq {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  min-height: 1.3em;
+}
+
+.tuner-state {
+  font-weight: 800;
+  min-height: 1.4em;
+  color: var(--muted);
+}
+
+.tuner-state.ok {
+  color: var(--safe);
+}
+
+.tuner-state.off {
+  color: var(--accent);
+}
+
+.tuner-state.unstable {
+  color: var(--bold);
+}
+
+.tuner-strings {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 0.6rem;
+}
+
+.tstring {
+  width: 2.6rem;
+  height: 2.6rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  font-weight: 800;
+  background: var(--panel-2);
+}
+
+.tstring.on {
+  border-color: var(--accent);
+  background: rgba(255, 179, 64, 0.2);
+}
+
+.tstring.on.ok {
+  border-color: var(--safe);
+  background: rgba(74, 222, 128, 0.25);
+}
+
+.calib-step {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.calib-bar {
+  height: 10px;
+  background: var(--panel-2);
+  border-radius: 99px;
+  overflow: hidden;
+  margin: 0.8rem 0;
+}
+
+.calib-fill {
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  transition: width 0.06s linear;
+}
+
+.calib-quality {
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.calib-quality.q-good {
+  color: var(--safe);
+}
+
+.calib-quality.q-fair {
+  color: var(--accent);
+}
+
+.calib-quality.q-poor {
+  color: var(--bold);
+}
+
+.echo-note {
+  color: var(--colorful);
+  font-weight: 700;
+  margin: 0.3rem 0 0;
+}

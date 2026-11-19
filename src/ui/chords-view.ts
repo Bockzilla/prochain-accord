@@ -49,7 +49,7 @@ export class ChordsView {
   constructor(private ctx: AppContext) {
     this.testSignal = new TestSignal(ctx.engine);
     this.chroma = new ChromaBars([]);
-    this.el = h('section', { id: 'view-play', class: 'view', 'aria-labelledby': 'tab-play' });
+    this.el = h('section', { id: 'chords-panel', class: 'chords-panel' });
     this.micButton.addEventListener('click', () => void this.toggleMic());
     this.render();
   }
@@ -66,6 +66,7 @@ export class ChordsView {
         this.lastName,
         h('div', { class: 'conf', 'aria-hidden': 'true' }, [h('div', { class: 'conf-track' }, [this.confBar]), this.confText]),
         this.keyLine,
+        this.echoNote,
       ]),
       this.hint,
       this.pauseNote,
@@ -76,7 +77,8 @@ export class ChordsView {
       this.historyBox,
       this.debugBox,
     );
-    this.pauseNote.textContent = t('play.pausedForBand');
+    this.pauseNote.textContent = t('play.speakerNotice');
+    this.echoNote.textContent = t('play.echo');
     this.renderMic();
     this.renderNow();
     this.renderDiagram();
@@ -93,14 +95,18 @@ export class ChordsView {
     if (!on && !this.micStatus.dataset.error) this.micStatus.textContent = t('mic.privacy');
   }
 
-  private async toggleMic(): Promise<void> {
+  /** Ouvre / ferme le micro (partagé par tous les espaces). `want` force l'état voulu. */
+  async toggleMic(want?: boolean): Promise<boolean> {
     const e = this.ctx.engine;
     delete this.micStatus.dataset.error;
-    if (e.micActive) {
+    const target = want ?? !e.micActive;
+    if (!target && e.micActive) {
       e.stopMic();
-    } else {
+    } else if (target && !e.micActive) {
       try {
         this.micStatus.textContent = t('mic.asking');
+        e.setChannel(this.ctx.settings.inputChannel);
+        e.echoCancellation = this.ctx.settings.echoCancellation;
         await e.startMic(this.ctx.settings.inputDeviceId);
         this.micStatus.textContent = t('mic.listening');
       } catch (err) {
@@ -109,10 +115,17 @@ export class ChordsView {
         this.micStatus.textContent = name === 'NotAllowedError' ? t('mic.denied') : !window.isSecureContext ? t('mic.https') : t('mic.error');
       }
     }
+    this.ctx.settings.micWanted = e.micActive;
     this.renderMic();
     this.renderHint();
     this.ctx.commit();
+    this.onMicChange?.();
+    return e.micActive;
   }
+
+  onMicChange: (() => void) | null = null;
+  /** Nouvel accord validé (pour le monde harmonique). */
+  onChordPlayed: ((c: Chord) => void) | null = null;
 
   renderHint(): void {
     const show = this.ctx.metro.running && this.ctx.engine.micActive;
@@ -250,17 +263,21 @@ export class ChordsView {
   /** Prévient les autres espaces (tonalité estimée, accords joués). */
   onKeyChange: ((key: Key | null, confidence: number, played: Chord[]) => void) | null = null;
 
-  /** Détection en pause (accompagnement sur haut-parleur) : message explicite. */
-  setPaused(paused: boolean): void {
-    if (this.paused === paused) return;
-    this.paused = paused;
-    this.pauseNote.hidden = !paused;
+  /** Accompagnement sur haut-parleur : message explicite (la détection continue, avec prudence). */
+  setSpeakerNotice(on: boolean): void {
+    this.pauseNote.hidden = !on;
   }
-  private paused = false;
   private pauseNote = h('p', { class: 'hint', hidden: true });
+  private echoNote = h('p', { class: 'echo-note', hidden: true });
 
-  /** Appelé ~20 fois par seconde par la boucle de détection. */
-  onDetection(r: DetectorResult): void {
+  /**
+   * Appelé par la boucle de détection. `bandChord` : accord joué par l'accompagnement
+   * quand il sort sur le haut-parleur (le micro peut l'entendre).
+   */
+  onDetection(r: DetectorResult, bandChord: Chord | null = null): void {
+    // Haut-parleur : un accord identique à celui de l'accompagnement est probablement… l'accompagnement.
+    const echo = !!bandChord && !!r.state.current && sameChord(r.state.current, bandChord);
+    this.echoNote.hidden = !echo;
     const a = r.analysis;
     if (a) {
       const pct = Math.round(a.confidence * 100);
@@ -268,7 +285,8 @@ export class ChordsView {
       this.confText.textContent = a.gateOpen ? t('now.confidence', { n: pct }) : t('now.silence');
     }
     const changedShown = !sameChord(r.state.current, this.shown) || (r.state.current === null) !== (this.shown === null);
-    if (r.state.changed && r.state.current) {
+    if (r.state.changed && r.state.current && !echo) {
+      this.onChordPlayed?.(r.state.current);
       const lastHist = this.history[this.history.length - 1];
       if (!lastHist || !sameChord(lastHist.chord, r.state.current)) {
         const m = this.ctx.metro;

@@ -16,6 +16,11 @@ export class AudioEngine {
   private micSource: MediaStreamAudioSourceNode | null = null;
   private analyserFallback: AnalyserNode | null = null;
   private workletReady: Promise<boolean> | null = null;
+  private worklet: AudioWorkletNode | null = null;
+  /** Canal analysé : -1 = mélange, 0 = entrée 1, 1 = entrée 2 (interface audio). */
+  private channel: -1 | 0 | 1 = -1;
+  /** Annulation d'écho du navigateur (haut-parleur) : imparfaite, réduit aussi la qualité du son. */
+  echoCancellation = false;
   /** Latence d'entrée estimée du micro (s). */
   inputLatency = 0.01;
 
@@ -53,7 +58,9 @@ export class AudioEngine {
       try {
         if (!this.ctx.audioWorklet) return false;
         await this.ctx.audioWorklet.addModule(workletUrl);
-        const node = new AudioWorkletNode(this.ctx, 'pa-capture', { numberOfInputs: 1, numberOfOutputs: 1, channelCount: 1, channelCountMode: 'explicit' });
+        const node = new AudioWorkletNode(this.ctx, 'pa-capture', { numberOfInputs: 1, numberOfOutputs: 1, channelCount: 2, channelCountMode: 'explicit', channelInterpretation: 'speakers' });
+        this.worklet = node;
+        node.port.postMessage({ channel: this.channel });
         node.port.onmessage = (e: MessageEvent<{ frame: number; samples: Float32Array }>) => this.ring.write(e.data.samples, e.data.frame);
         input.connect(node);
         const silent = this.ctx.createGain();
@@ -89,11 +96,16 @@ export class AudioEngine {
   }
 
   /** Ouvre le micro. Le son reste dans l'appareil : il n'est jamais enregistré ni envoyé. */
+  setChannel(c: -1 | 0 | 1): void {
+    this.channel = c;
+    this.worklet?.port.postMessage({ channel: c });
+  }
+
   async startMic(deviceId = ''): Promise<void> {
     await this.resume();
     const input = await this.ensureCapture();
     if (this.micSource) return;
-    const base = { echoCancellation: false, noiseSuppression: false, autoGainControl: false };
+    const base = { echoCancellation: this.echoCancellation, noiseSuppression: false, autoGainControl: false, channelCount: { ideal: 2 } };
     try {
       this.micStream = await navigator.mediaDevices.getUserMedia({ audio: deviceId ? { ...base, deviceId: { exact: deviceId } } : base, video: false });
     } catch (err) {
@@ -125,6 +137,11 @@ export class AudioEngine {
     this.micSource = null;
     this.micStream?.getTracks().forEach((t) => t.stop());
     this.micStream = null;
+  }
+
+  /** Nombre de canaux réellement fournis par l'entrée (1 = mono, 2 = interface stéréo…). */
+  get inputChannels(): number {
+    return (this.micStream?.getAudioTracks()[0]?.getSettings().channelCount as number | undefined) ?? 0;
   }
 
   get micActive(): boolean {

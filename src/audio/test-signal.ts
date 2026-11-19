@@ -12,6 +12,11 @@ export class TestSignal {
 
   constructor(private engine: AudioEngine) {}
 
+  /** Note seule (accordeur, détection de notes) : `cents` = désaccord volontaire. */
+  async playNote(midi: number, cents: number, audible: boolean): Promise<void> {
+    await this.play([midi + cents / 100], audible);
+  }
+
   async play(midis: number[], audible: boolean): Promise<void> {
     this.stop();
     const ctx = this.engine.ctx;

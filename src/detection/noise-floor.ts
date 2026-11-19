@@ -54,4 +54,13 @@ export class NoiseFloor {
   reset(): void {
     this.floor = null;
   }
+
+  setMargin(margin: number): void {
+    this.opts = { ...this.opts, margin };
+  }
+
+  /** Impose un plancher mesuré (calibration). */
+  seed(level: number): void {
+    this.floor = Math.min(this.opts.maximum, Math.max(this.opts.minimum, level));
+  }
 }
