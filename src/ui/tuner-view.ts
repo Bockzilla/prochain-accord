@@ -1,5 +1,4 @@
-import { yinPitch } from '../detection/pitch';
-import { GUITAR_STRINGS, TunerStabilizer, type TunerReading } from '../detection/tuner';
+import { GUITAR_STRINGS, TunerStabilizer, tunerPitch, type TunerReading } from '../detection/tuner';
 import { getLocale, t } from '../i18n/i18n';
 import { pcName } from '../i18n/notation';
 import { h, s, setChildren } from '../render/dom';
@@ -146,11 +145,11 @@ export class TunerView {
     if (!fresh) return this.show(null);
     const frame = e.ring.read(FRAME, e.ring.lastFrame);
     if (!frame) return;
-    const r = this.stab.update(yinPitch(frame, e.sampleRate));
+    const r = this.stab.update(tunerPitch(frame, e.sampleRate, this.stab.ringing));
     if (r) {
       this.lastSeen = performance.now();
       this.show(r);
-    } else if (performance.now() - this.lastSeen > 900) {
+    } else if (performance.now() - this.lastSeen > 500) {
       this.show(null);
     }
   }

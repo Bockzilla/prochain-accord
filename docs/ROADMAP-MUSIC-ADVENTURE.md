@@ -22,7 +22,13 @@ Point de départ inspecté le 2026-11-19 : commit `913efce` (V2), 144 tests au v
 
 | Date | Appareil / micro | Test | Résultat | Suite donnée |
 |---|---|---|---|---|
-| — | — | en attente des premiers résultats | — | — |
+| 2026-11-19 | vraie guitare (appareil à préciser) | 1 — Accordeur, mode Guitare | **échec** : « quand tu changes de note, il reste à vouloir accorder la même note » | **corrigé (v3.0.1)**, voir ci-dessous ; à re-tester |
+
+**Correctif v3.0.1 — accordeur bloqué sur la corde précédente.**
+- *Cause (reproduite en simulation)* : la corde qu'on vient d'accorder sonne encore quand on pince la suivante. Le mélange des deux faisait chuter la clarté de la mesure, donc la nouvelle note était rejetée et l'écran restait sur l'ancienne. Pire, deux cordes voisines (une quarte) se répètent ensemble comme une note fantôme grave : Si + Mi aigu ressemblent à un Mi grave.
+- *Correction* (`detection/tuner.ts`) : quand la mesure est floue ou ressemble à un fantôme, on retire les cordes récentes par un filtre en peigne et on mesure ce qui reste ; une ancienne corde ne reprend l'affichage que si elle a vraiment été repincée. Changement de note confirmé en 2 mesures au lieu de 3 à 5 ; l'ancienne lecture reste affichée 0,5 s au lieu de 0,9 s.
+- *Preuves* : `tests/tuner.test.ts`, 9 scénarios (dont les 6 cordes enchaînées, Mi repincé, clé qu'on tourne, accord toujours rejeté). L'ancien code échoue à 6 d'entre eux. Surcoût mesuré : 1,1 ms par mesure dans le pire cas (0,5 ms avant). Navigateur : notes de test Mi2 → La2 → Sol3 → Mi2 suivies en moins de 0,6 s.
+- *Limite* : signaux synthétiques. Seul votre re-test avec la guitare confirmera.
 
 ## Phase A — Fiabilité audio
 
