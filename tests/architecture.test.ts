@@ -31,7 +31,7 @@ describe('découplage des modules', () => {
     expect(bad).toEqual([]);
   });
   it('suggestions/, instruments/ et detection/ ne dépendent pas de l’interface', () => {
-    for (const d of ['src/suggestions', 'src/instruments', 'src/detection']) {
+    for (const d of ['src/suggestions', 'src/instruments', 'src/detection', 'src/accompaniment']) {
       const bad = imports(d).filter((i) => /\.\.\/(ui|render)\b/.test(i.spec));
       expect(bad, d).toEqual([]);
     }
