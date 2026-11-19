@@ -34,7 +34,7 @@ export class MetronomeView {
   private presets: Preset[] = loadPresets(store);
 
   constructor(private ctx: AppContext) {
-    this.el = h('section', { id: 'view-metronome', class: 'view', 'aria-labelledby': 'tab-metronome' });
+    this.el = h('section', { id: 'view-metronome', class: 'view' });
     this.compact = h('div', { class: 'compact-metro' });
     ctx.metro.onVisual((e) => this.onBeat(e));
     ctx.metro.onState(() => this.renderPlay());

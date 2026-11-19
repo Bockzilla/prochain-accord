@@ -5,6 +5,11 @@ import type { BeatState, Subdivision } from '../metronome/meter';
 import type { SoundId } from '../metronome/presets';
 import type { Volumes } from '../metronome/sounds';
 import type { AcceleratorConfig, SilentBarsConfig } from '../metronome/training';
+import type { Style } from '../theory/harmony';
+import type { Mode } from '../theory/keys';
+import type { ScaleType } from '../theory/scales';
+
+export type Space = 'play' | 'improvise' | 'accompany' | 'understand';
 
 export interface Settings {
   locale: Locale;
@@ -22,6 +27,30 @@ export interface Settings {
   playStyle: 'strum' | 'block';
   wakeLock: boolean;
   vibrate: boolean;
+  /** Espace affiché (mémorisé). */
+  space: Space;
+  /** Entrée audio choisie (deviceId), '' = par défaut. */
+  inputDeviceId: string;
+  /** Seuil de bruit adaptatif (reconnaissance adaptative). */
+  adaptive: boolean;
+  music: {
+    /** 'auto' = tonalité estimée à partir des accords joués ; 'manual' = choisie. */
+    keyMode: 'auto' | 'manual';
+    tonic: number;
+    mode: Mode;
+    scale: ScaleType;
+    /** 0 = manche entier, 1..5 = position pentatonique. */
+    position: number;
+    labels: 'notes' | 'intervals';
+    beginner: boolean;
+    style: Style;
+    progressionId: string;
+    countIn: 0 | 1 | 2;
+    volumes: { drums: number; comp: number; click: number };
+    /** L'utilisateur confirme porter des écouteurs : la détection reste active pendant l'accompagnement. */
+    headphones: boolean;
+    accompanySection: 'loops' | 'metronome';
+  };
   metro: {
     bpm: number;
     signatureId: string;
@@ -51,6 +80,24 @@ export function defaultSettings(langs: readonly string[]): Settings {
     playStyle: 'strum',
     wakeLock: true,
     vibrate: false,
+    space: 'play',
+    inputDeviceId: '',
+    adaptive: true,
+    music: {
+      keyMode: 'auto',
+      tonic: 9,
+      mode: 'minor',
+      scale: 'minorPentatonic',
+      position: 1,
+      labels: 'notes',
+      beginner: true,
+      style: 'blues',
+      progressionId: 'blues12',
+      countIn: 1,
+      volumes: { drums: 0.7, comp: 0.7, click: 0 },
+      headphones: false,
+      accompanySection: 'loops',
+    },
     metro: {
       bpm: 100,
       signatureId: '4/4',

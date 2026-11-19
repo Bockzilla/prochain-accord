@@ -21,9 +21,10 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
   event.respondWith(
-    caches.match(req, { ignoreSearch: true }).then((hit) => {
+    // ignoreVary : la requête d'un script module porte un en-tête Origin absent lors de la mise en cache.
+    caches.match(req, { ignoreSearch: true, ignoreVary: true }).then((hit) => {
       if (hit) return hit;
-      return fetch(req).catch(() => (req.mode === 'navigate' ? caches.match('./') : Response.error()));
+      return fetch(req).catch(() => (req.mode === 'navigate' ? caches.match('./', { ignoreVary: true }) : Response.error()));
     }),
   );
 });

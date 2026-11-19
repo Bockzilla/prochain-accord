@@ -1,12 +1,13 @@
 # Prochain Accord
 
-Application web progressive (PWA) pour guitaristes, pensée pour un téléphone Android posé sur un lutrin :
+Application web progressive (PWA) pour guitaristes, pensée pour un téléphone posé sur un lutrin. Quatre espaces :
 
-1. elle **écoute** au micro ce que vous jouez ;
-2. elle **affiche l'accord** détecté en temps réel, avec un indice de confiance ;
-3. elle montre **comment le jouer** sur guitare (plusieurs positions, mode gaucher), mandoline ou piano (renversements) ;
-4. elle **suggère les prochains accords**, classés de « sûr » à « audacieux », selon la tonalité estimée ;
-5. elle intègre un **métronome** précis : TAP tempo, signatures, subdivisions, accents par temps, entraînement.
+1. **Jouer** : elle écoute au micro, affiche l'accord joué (avec un indice de confiance), son doigté sur guitare, mandoline ou piano, et les prochains accords possibles, de « sûr » à « audacieux ».
+2. **Improviser** : un manche interactif (cases 0 à 17) avec les gammes pentatoniques, blues, majeure, mineure naturelle et mixolydienne, les 5 positions pentatoniques, les noms de notes ou les intervalles, et un mode débutant. Toucher une note la fait entendre.
+3. **Accompagner** : des boucles d'accords avec batterie, en blues, rock, folk ou country, avec décompte, lecture/pause/arrêt et volumes séparés. Le métronome complet (TAP tempo, signatures, entraînement) se trouve aussi ici.
+4. **Comprendre** : un cercle des quintes interactif, les accords de la tonalité et leur fonction, des progressions par style, et l'analyse d'une progression (tonalité avec son degré de certitude, rôle des accords, gammes pour improviser).
+
+La tonalité, le tempo et les accords joués sont partagés entre les quatre espaces.
 
 Tout tourne dans le téléphone : **le son ne quitte jamais l'appareil**, aucune donnée n'est envoyée, aucun compte.
 
@@ -39,12 +40,14 @@ Sans guitare : Réglages → **Mode débogage**, puis « Envoyer le signal de te
 ```
 src/
   theory/       moteur harmonique PUR : notes, accords, tonalités (Krumhansl), chiffres romains, Camelot
+  theory/       (suite) gammes, positions sur le manche, fonctions harmoniques, analyse prudente, progressions
   suggestions/  graphe des relations (diatoniques, relatif, quintes, V/x, emprunts, médiantes) + classement
   instruments/  modèle commun « cordes accordées + cases », doigtés guitare/mandoline, renversements piano
   metronome/    planificateur (horloge injectée), TAP tempo, entraînement, sons Web Audio, préréglages
-  detection/    FFT → chromagramme → gabarits d'accords → stabilisation ; évitement des clics du métronome
+  accompaniment/ motifs rythmiques originaux, arrangeur (pur) calé sur le métronome, orchestre synthétisé
+  detection/    FFT → chromagramme → gabarits d'accords → stabilisation ; évitement des clics ; seuil de bruit adaptatif
   audio/        AudioContext unique, capture micro (AudioWorklet), tampon circulaire, signal de test
-  render/       diagrammes SVG (manche, clavier), cercles du métronome, barres du chromagramme
+  render/       diagrammes SVG (accords, manche interactif, clavier, cercle des quintes), cercles du métronome
   synth/        petit synthé pour écouter un accord
   i18n/         fr.json, en.json, es.json, notation des notes
   ui/           vues, réglages, Wake Lock
@@ -80,7 +83,10 @@ Pour un autre hébergeur (ex. un sous-domaine Hostinger) : `npm run build`, puis
 
 ## Limites connues
 
-- **Jamais testé avec une vraie guitare par l'auteur du code** : seulement avec des signaux synthétiques. Voir le [protocole de test réel](docs/TEST-PROTOCOL.md).
+- **Jamais testé avec une vraie guitare par l'auteur du code** : seulement avec des signaux synthétiques. Voir le [protocole de test réel](docs/TEST-PROTOCOL.md). Un test de code qui passe ne prouve pas qu'un accompagnement ou une gamme « sonne bien » : seule l'écoute le dira.
+- Accompagnement sur le haut-parleur : la détection d'accords se met en pause (sinon elle entendrait la boucle). Avec des écouteurs, on peut la garder active.
+- L'accompagnement se met en pause quand l'écran s'éteint ou qu'une autre appli passe devant.
+- Sons d'accompagnement volontairement simples (synthèse légère, rythmes originaux) ; motifs pensés pour 4 temps.
 - Accords reconnus : 12 majeurs + 12 mineurs ; en option 7, maj7, m7, sus2, sus4. Pas de dim, aug, 9, slash chords.
 - Csus2 et Gsus4 ont exactement les mêmes notes : seule la basse les distingue, ce qui reste fragile.
 - Délai d'affichage d'environ 0,5 s (fenêtre de 170 ms + stabilisation de 350 ms), voulu pour éviter le clignotement.

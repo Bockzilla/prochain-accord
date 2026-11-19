@@ -41,3 +41,49 @@ export function spellingForRoman(roman: string, key: Key | null): Spelling {
 export function romanPretty(s: string): string {
   return prettyAccidentals(s);
 }
+
+const LETTER_PC: Record<string, number> = { c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11, do: 0, re: 2, 'ré': 2, mi: 4, fa: 5, sol: 7, la: 9, si: 11 };
+const SUFFIX_QUALITY: [string, Chord['quality']][] = [
+  ['maj7', 'maj7'],
+  ['m7', 'm7'],
+  ['min7', 'm7'],
+  ['sus2', 'sus2'],
+  ['sus4', 'sus4'],
+  ['dim', 'dim'],
+  ['°', 'dim'],
+  ['min', 'min'],
+  ['m', 'min'],
+  ['7', '7'],
+  ['', 'maj'],
+];
+
+/**
+ * Lit un nom d'accord en notation anglo-saxonne ou latine : « Am », « F#7 », « Bb », « Lam », « Fa#7 », « Sib ».
+ * Retourne null si le nom n'est pas reconnu.
+ */
+export function parseChordName(raw: string): Chord | null {
+  const txt = raw.trim().replace(/♯/g, '#').replace(/♭/g, 'b');
+  const m = /^(do|ré|re|mi|fa|sol|la|si|[a-g])([#b]?)(.*)$/i.exec(txt);
+  if (!m) return null;
+  const base = LETTER_PC[m[1]!.toLowerCase()];
+  if (base === undefined) return null;
+  const acc = m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0;
+  // « Sib » : le b final est un bémol, pas « si + b ». Déjà géré par le groupe 2.
+  const rest = m[3]!;
+  const found = SUFFIX_QUALITY.find(([suf]) => rest.toLowerCase() === suf);
+  if (!found) return null;
+  return { root: (((base + acc) % 12) + 12) % 12, quality: found[1] };
+}
+
+/** Lit une progression séparée par espaces, virgules, tirets ou barres. */
+export function parseProgression(text: string): { chords: Chord[]; invalid: string[] } {
+  const parts = text.split(/[\s,;|–—-]+/).filter(Boolean);
+  const chords: Chord[] = [];
+  const invalid: string[] = [];
+  for (const p of parts) {
+    const c = parseChordName(p);
+    if (c) chords.push(c);
+    else invalid.push(p);
+  }
+  return { chords, invalid };
+}

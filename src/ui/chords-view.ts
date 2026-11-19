@@ -9,6 +9,8 @@ import { ChromaBars } from '../render/chroma-bars';
 import { h } from '../render/dom';
 import { suggestNext, type SuggestResult } from '../suggestions/rank';
 import { ALL_QUALITIES, BASIC_QUALITIES, chord, chordId, chordPitchClasses, sameChord, type Chord } from '../theory/chords';
+import { keySpelling, type Key } from '../theory/keys';
+import { analyzeProgression } from '../theory/harmony';
 import { chordDiagram } from './diagram';
 import { nameOf, type AppContext } from './context';
 
@@ -47,7 +49,7 @@ export class ChordsView {
   constructor(private ctx: AppContext) {
     this.testSignal = new TestSignal(ctx.engine);
     this.chroma = new ChromaBars([]);
-    this.el = h('section', { id: 'view-chords', class: 'view', 'aria-labelledby': 'tab-chords' });
+    this.el = h('section', { id: 'view-play', class: 'view', 'aria-labelledby': 'tab-play' });
     this.micButton.addEventListener('click', () => void this.toggleMic());
     this.render();
   }
@@ -66,6 +68,7 @@ export class ChordsView {
         this.keyLine,
       ]),
       this.hint,
+      this.pauseNote,
       h('div', { class: 'diagram-card card' }, [this.diagramBox]),
       h('h2', { text: t('suggestions.title') }),
       this.suggestionsBox,
@@ -73,6 +76,7 @@ export class ChordsView {
       this.historyBox,
       this.debugBox,
     );
+    this.pauseNote.textContent = t('play.pausedForBand');
     this.renderMic();
     this.renderNow();
     this.renderDiagram();
@@ -97,7 +101,7 @@ export class ChordsView {
     } else {
       try {
         this.micStatus.textContent = t('mic.asking');
-        await e.startMic();
+        await e.startMic(this.ctx.settings.inputDeviceId);
         this.micStatus.textContent = t('mic.listening');
       } catch (err) {
         const name = (err as DOMException)?.name;
@@ -127,9 +131,16 @@ export class ChordsView {
     this.bigName.classList.toggle('waiting', !c);
     this.lastName.textContent = !c && this.last ? t('now.last', { chord: nameOf(this.ctx, this.last, key) }) : this.preview ? t('now.preview', { chord: nameOf(this.ctx, this.preview, key) }) : '';
     if (this.suggest) {
-      const k = this.suggest.key;
-      const keyName = `${pcName(k.tonic, this.ctx.settings.notation, getLocale(), 'sharp')} ${t(k.mode === 'major' ? 'key.major' : 'key.minor')}`;
-      this.keyLine.textContent = t(this.suggest.keyConfidence < 0.35 ? 'key.estimatedUnsure' : 'key.estimated', { key: keyName });
+      const keyName = (k: Key) => `${pcName(k.tonic, this.ctx.settings.notation, getLocale(), keySpelling(k))} ${t(k.mode === 'major' ? 'key.major' : 'key.minor')}`;
+      // Même analyse prudente que « Comprendre » : une tonalité ambiguë n'est jamais affichée comme sûre.
+      const a = this.history.length >= 2 ? analyzeProgression(this.history.map((x) => x.chord)) : null;
+      if (a?.relativeAmbiguity) {
+        this.keyLine.textContent = t('key.ambiguous', { a: keyName(a.candidates[0]!.key), b: keyName(a.candidates[1]!.key) });
+      } else if (a) {
+        this.keyLine.textContent = t(a.certainty === 'high' ? 'key.estimated' : 'key.estimatedUnsure', { key: keyName(a.best) });
+      } else {
+        this.keyLine.textContent = t('key.estimatedUnsure', { key: keyName(this.suggest.key) });
+      }
     } else {
       this.keyLine.textContent = t('key.none');
     }
@@ -220,6 +231,7 @@ export class ChordsView {
     clear.firstElementChild!.addEventListener('click', () => {
       this.history = [];
       this.suggest = null;
+      this.onKeyChange?.(null, 0, []);
       this.ctx.detector.stabilizer.reset();
       this.shown = this.last = this.preview = null;
       this.render();
@@ -230,7 +242,22 @@ export class ChordsView {
   private updateSuggestions(): void {
     const chords = this.history.map((x) => x.chord);
     this.suggest = suggestNext(chords, { count: 6, sevenths: this.ctx.settings.extended });
+    const a = chords.length >= 2 ? analyzeProgression(chords) : null;
+    const conf = !a ? 0 : a.relativeAmbiguity ? 0.3 : a.certainty === 'high' ? 1 : a.certainty === 'medium' ? 0.6 : 0.3;
+    this.onKeyChange?.(a ? a.best : null, conf, chords);
   }
+
+  /** Prévient les autres espaces (tonalité estimée, accords joués). */
+  onKeyChange: ((key: Key | null, confidence: number, played: Chord[]) => void) | null = null;
+
+  /** Détection en pause (accompagnement sur haut-parleur) : message explicite. */
+  setPaused(paused: boolean): void {
+    if (this.paused === paused) return;
+    this.paused = paused;
+    this.pauseNote.hidden = !paused;
+  }
+  private paused = false;
+  private pauseNote = h('p', { class: 'hint', hidden: true });
 
   /** Appelé ~20 fois par seconde par la boucle de détection. */
   onDetection(r: DetectorResult): void {

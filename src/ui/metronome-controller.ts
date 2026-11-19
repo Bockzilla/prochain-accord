@@ -22,6 +22,8 @@ export class MetronomeController {
   latencyMs = 0;
   vibrate = false;
   lastShown: TickEvent | null = null;
+  /** Volume de chaque clic (ex. accompagnement : décompte audible puis clic réglable). null = normal. */
+  clickGain: ((e: TickEvent) => number) | null = null;
   /** Relevé de diagnostic (mode débogage seulement) : heure du clic et heure de sa planification. */
   debugLog: { time: number; scheduledAt: number; sub: number }[] | null = null;
 
@@ -33,9 +35,12 @@ export class MetronomeController {
         this.debugLog.push({ time: e.time, scheduledAt: engine.ctx.currentTime, sub: e.sub });
         if (this.debugLog.length > 4000) this.debugLog.shift();
       }
-      this.voice.play(e);
-      if (e.audible) this.onClickAtMic?.(e.time + engine.outputLatency + engine.inputLatency);
+      const gain = this.clickGain ? this.clickGain(e) : 1;
+      this.voice.play(e, gain);
+      if (e.audible && gain > 0) this.onClickAtMic?.(e.time + engine.outputLatency + engine.inputLatency);
       this.queue.push(e);
+      // Page en arrière-plan : l'animation ne tourne plus ; on ne garde que les derniers événements.
+      if (this.queue.length > 256) this.queue.splice(0, this.queue.length - 256);
     });
   }
 

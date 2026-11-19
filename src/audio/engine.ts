@@ -89,19 +89,35 @@ export class AudioEngine {
   }
 
   /** Ouvre le micro. Le son reste dans l'appareil : il n'est jamais enregistré ni envoyé. */
-  async startMic(): Promise<void> {
+  async startMic(deviceId = ''): Promise<void> {
     await this.resume();
     const input = await this.ensureCapture();
     if (this.micSource) return;
-    this.micStream = await navigator.mediaDevices.getUserMedia({
-      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
-      video: false,
-    });
+    const base = { echoCancellation: false, noiseSuppression: false, autoGainControl: false };
+    try {
+      this.micStream = await navigator.mediaDevices.getUserMedia({ audio: deviceId ? { ...base, deviceId: { exact: deviceId } } : base, video: false });
+    } catch (err) {
+      // L'entrée choisie a disparu (interface USB débranchée…) : on reprend l'entrée par défaut.
+      if (!deviceId || (err as DOMException)?.name === 'NotAllowedError') throw err;
+      this.micStream = await navigator.mediaDevices.getUserMedia({ audio: base, video: false });
+    }
     const track = this.micStream.getAudioTracks()[0];
     const lat = (track?.getSettings() as MediaTrackSettings & { latency?: number })?.latency;
     if (typeof lat === 'number' && lat > 0 && lat < 0.5) this.inputLatency = lat;
     this.micSource = this.ctx.createMediaStreamSource(this.micStream);
     this.micSource.connect(input);
+  }
+
+  /** Identifiant de l'entrée réellement utilisée. */
+  get activeDeviceId(): string {
+    return (this.micStream?.getAudioTracks()[0]?.getSettings().deviceId as string | undefined) ?? '';
+  }
+
+  /** Entrées audio disponibles (les noms ne sont visibles qu'après l'autorisation du micro). */
+  async listInputs(): Promise<{ id: string; label: string }[]> {
+    if (!navigator.mediaDevices?.enumerateDevices) return [];
+    const all = await navigator.mediaDevices.enumerateDevices();
+    return all.filter((d) => d.kind === 'audioinput').map((d) => ({ id: d.deviceId, label: d.label }));
   }
 
   stopMic(): void {

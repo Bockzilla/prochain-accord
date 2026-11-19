@@ -36,3 +36,8 @@ function append(el: Element, children: Child[]): void {
 export function clear(el: Element): void {
   while (el.firstChild) el.removeChild(el.firstChild);
 }
+
+/** Remplace les enfants en ignorant les entrées vides (affichage conditionnel). */
+export function setChildren(el: Element, children: (Node | null | undefined | false)[]): void {
+  el.replaceChildren(...(children.filter(Boolean) as Node[]));
+}

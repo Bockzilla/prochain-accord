@@ -2,7 +2,7 @@
 
 > **Important — auto-vérification.** Cet audit a été réalisé par l'assistant qui a écrit le code. Ce n'est **pas** une revue de sécurité indépendante. Il vérifie des points concrets et reproductibles (licences, scripts d'installation, appels réseau, versions), mais ne remplace pas l'avis d'un tiers.
 
-Dernière mise à jour : 2026-11-18.
+Dernière mise à jour : 2026-11-19 (V2 : aucune dépendance ajoutée).
 
 ## Résumé
 
@@ -16,7 +16,7 @@ Dernière mise à jour : 2026-11-18.
 | Scripts d'installation exécutés | aucun (`ignore-scripts=true` dans `.npmrc`, `npm ci --ignore-scripts` en CI) |
 | CDN à l'exécution | aucun — tout est empaqueté, vérifié par la CSP `default-src 'self'` |
 
-Le bundle final (`dist/assets/index-*.js`, ~81 Ko, 27 Ko compressé) ne contient que du code maison : aucun `fetch`, `XMLHttpRequest`, `WebSocket`, `eval` ni `new Function` (vérifié par recherche dans le fichier produit et par le test `tests/architecture.test.ts` sur le code source).
+Le bundle final (`dist/assets/index-*.js`, ~144 Ko, 46 Ko compressé, V2 incluse) ne contient que du code maison : aucun `fetch`, `XMLHttpRequest`, `WebSocket`, `eval` ni `new Function` (vérifié par recherche dans le fichier produit et par le test `tests/architecture.test.ts` sur le code source).
 
 ## Dépendances retenues (développement uniquement)
 
@@ -48,6 +48,7 @@ Liste complète et reproductible : `npm ls --all`, ou le script d'audit décrit 
 | `svguitar` (diagrammes, MIT) | Le rendu SVG maison (`src/render/fretboard-svg.ts`, ~80 lignes) gère X/O, doigts, barrés, gaucher, mandoline, sans `innerHTML` (compatible CSP stricte). |
 | `Meyda` (analyse audio, MIT) | La FFT radix-2 + chromagramme maison font ~150 lignes et sont testés avec des signaux synthétiques. |
 | `Essentia.js` | Licence **AGPL-3.0** : exclue d'office (incompatible avec une vente de l'app sans publier le code). |
+| Bibliothèques de batterie, échantillons audio, Tone.js | V2 : l'accompagnement est synthétisé en Web Audio (environ 200 lignes) ; aucun fichier audio, aucune API payante, aucun contenu protégé. |
 | `vite-plugin-pwa` / Workbox | Arbre de dépendances important pour un besoin simple : service worker maison (`src/sw-template.js`, ~30 lignes) généré au build. |
 
 ## Comment l'audit a été fait (reproductible)

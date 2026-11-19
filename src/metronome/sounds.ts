@@ -27,9 +27,9 @@ export class MetronomeVoice {
   }
 
   /** Planifie le son d'un événement à son heure exacte (horloge audio). */
-  play(ev: TickEvent): void {
-    if (!ev.audible) return;
-    const level = ev.kind === 'accent' ? this.volumes.accent : ev.kind === 'sub' ? this.volumes.sub : this.volumes.beat * (ev.groupStart ? 1.1 : 1);
+  play(ev: TickEvent, gain = 1): void {
+    if (!ev.audible || gain <= 0) return;
+    const level = gain * (ev.kind === 'accent' ? this.volumes.accent : ev.kind === 'sub' ? this.volumes.sub : this.volumes.beat * (ev.groupStart ? 1.1 : 1));
     if (level <= 0) return;
     const pitch = ev.kind === 'accent' ? 1.5 : ev.kind === 'sub' ? 0.8 : 1;
     const t = Math.max(ev.time, this.ctx.currentTime);

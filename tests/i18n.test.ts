@@ -7,6 +7,8 @@ import fr from '../src/i18n/fr.json';
 import { detectLocale, setLocale, t } from '../src/i18n/i18n';
 import { chordName, defaultNotation, pcName } from '../src/i18n/notation';
 import { chord } from '../src/theory/chords';
+import { PROGRESSIONS, STYLES } from '../src/theory/harmony';
+import { SCALE_TYPES } from '../src/theory/scales';
 
 function files(dir: string): string[] {
   return readdirSync(dir).flatMap((n) => {
@@ -47,6 +49,14 @@ describe('fichiers de langue', () => {
       ...[1, 2, 3, 4].map((x) => `subdiv.${x}`),
       ...[0, 1, 2].map((x) => `training.countIn${x}`),
       'key.major', 'key.minor', 'key.estimated', 'key.estimatedUnsure', 'metro.plus', 'metro.minus',
+      ...['play', 'improvise', 'accompany', 'understand'].map((x) => `space.${x}`),
+      ...STYLES.flatMap((x) => [`style.${x}`, `styleExplain.${x}`]),
+      ...PROGRESSIONS.map((p) => `prog.${p.id}`),
+      ...SCALE_TYPES.flatMap((x) => [`scale.${x}`, `beginner.scale.${x}`]),
+      ...['tonic', 'subdominant', 'dominant', 'outside'].flatMap((x) => [`fn.${x}`, `fnRole.${x}`]),
+      ...['high', 'medium', 'low'].map((x) => `analysis.certainty.${x}`),
+      ...['pentatonicSafe', 'fullScale', 'bluesColor', 'relativeSame', 'majorPentaOverDominant', 'mixolydianB7'].map((x) => `scaleReason.${x}`),
+      ...['drums', 'comp', 'click'].map((x) => `accompany.vol.${x}`),
     ];
     for (const k of [...used, ...dyn]) expect(fr, k).toHaveProperty([k]);
   });
@@ -64,7 +74,11 @@ describe('aucun texte codé en dur dans l’interface', () => {
     for (const f of ui) {
       const code = readFileSync(f, 'utf8').replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
       // Littéraux contenant au moins un mot de 3 lettres, affectés à du texte visible.
-      for (const m of code.matchAll(/(textContent\s*=|text:|placeholder:|'aria-label':)\s*(['"`])([^'"`]*?[A-Za-zÀ-ÿ]{3,}[^'"`]*)\2/g)) offenders.push(`${f}: ${m[3]}`);
+      for (const m of code.matchAll(/(textContent\s*=|text:|placeholder:|'aria-label':)\s*(['"`])([^'"`]*?)\2/g)) {
+        // Les interpolations ${…} sont du code, pas du texte affiché : on les retire avant de chercher des mots.
+        const literal = m[3]!.replace(/\$\{[^}]*\}/g, '').replace(/\$\{.*$/, '');
+        if (/[A-Za-zÀ-ÿ]{3,}/.test(literal)) offenders.push(`${f}: ${m[3]}`);
+      }
     }
     expect(offenders).toEqual([]);
   });
@@ -121,5 +135,23 @@ describe('orthographe des accords chromatiques', () => {
     const key = { tonic: 0, mode: 'major' as const };
     expect(chordName(chord(10, 'min'), 'anglo', 'en', key, spellingForRoman('bvii', key))).toBe('B♭m');
     expect(chordName(chord(6), 'anglo', 'en', key, spellingForRoman('#IV', key))).toBe('F♯');
+  });
+});
+
+describe('saisie d’une progression', () => {
+  it('notations anglo-saxonne et latine', async () => {
+    const { parseChordName, parseProgression } = await import('../src/i18n/notation');
+    expect(parseChordName('Am')).toEqual({ root: 9, quality: 'min' });
+    expect(parseChordName('F#7')).toEqual({ root: 6, quality: '7' });
+    expect(parseChordName('Bb')).toEqual({ root: 10, quality: 'maj' });
+    expect(parseChordName('B♭maj7')).toEqual({ root: 10, quality: 'maj7' });
+    expect(parseChordName('Lam')).toEqual({ root: 9, quality: 'min' });
+    expect(parseChordName('Sib')).toEqual({ root: 10, quality: 'maj' });
+    expect(parseChordName('Ré7')).toEqual({ root: 2, quality: '7' });
+    expect(parseChordName('Bdim')).toEqual({ root: 11, quality: 'dim' });
+    expect(parseChordName('H7')).toBeNull();
+    const p = parseProgression('Am – F, C | G  xyz');
+    expect(p.chords.map((c) => c.root)).toEqual([9, 5, 0, 7]);
+    expect(p.invalid).toEqual(['xyz']);
   });
 });
