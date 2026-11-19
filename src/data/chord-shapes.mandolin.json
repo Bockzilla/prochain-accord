@@ -1,0 +1,13 @@
+{
+  "$comment": "Doigtés de référence, mandoline (G D A E, grave → aigu, une ligne par paire). Vérifiés par tests/instruments.test.ts.",
+  "shapes": [
+    { "name": "C", "root": 0, "quality": "maj", "frets": "0230" },
+    { "name": "D", "root": 2, "quality": "maj", "frets": "2002" },
+    { "name": "E", "root": 4, "quality": "maj", "frets": "1224" },
+    { "name": "G", "root": 7, "quality": "maj", "frets": "0023" },
+    { "name": "A", "root": 9, "quality": "maj", "frets": "2245" },
+    { "name": "Dm", "root": 2, "quality": "min", "frets": "2001" },
+    { "name": "Em", "root": 4, "quality": "min", "frets": "0220" },
+    { "name": "Am", "root": 9, "quality": "min", "frets": "2235" }
+  ]
+}
