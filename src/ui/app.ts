@@ -98,7 +98,7 @@ export function startApp(root: HTMLElement): void {
   const playView = new PlayView(ctx, chordsView, tunerView, worldView.el);
   playView.onWorldVisible = (v) => worldView.setVisible(v && document.visibilityState === 'visible');
   const metroView = new MetronomeView(ctx);
-  const improviseView = new ImproviseView(ctx, shared);
+  const improviseView = new ImproviseView(ctx, shared, acc);
   const accompanyView = new AccompanyView(ctx, shared, acc, metroView);
   const harmonyView = new HarmonyView(ctx, shared, {
     showScale: (s) => {
@@ -173,6 +173,7 @@ export function startApp(root: HTMLElement): void {
     if (sp !== 'play') views[sp].render();
     playView.syncActive();
     worldView.setVisible(sp === 'play' && settings.playView === 'world' && document.visibilityState === 'visible');
+    improviseView.setActive(sp === 'improvise' && document.visibilityState === 'visible');
     // La barre compacte (métronome) reste disponible partout sauf dans « Accompagner », qui a ses commandes.
     footer.hidden = sp === 'accompany';
     saveSettings(settings);
@@ -326,5 +327,6 @@ export function startApp(root: HTMLElement): void {
     if (document.visibilityState === 'hidden' && acc.state === 'playing') acc.pause();
     if (document.visibilityState === 'visible') ctx.commit();
     worldView.setVisible(document.visibilityState === 'visible' && settings.space === 'play' && settings.playView === 'world');
+    improviseView.setActive(document.visibilityState === 'visible' && settings.space === 'improvise');
   });
 }

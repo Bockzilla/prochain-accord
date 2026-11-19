@@ -109,3 +109,34 @@ export function positionRange(box: NeckNote[]): { from: number; to: number } {
   const frets = box.map((n) => n.fret);
   return { from: Math.min(...frets), to: Math.max(...frets) };
 }
+
+/**
+ * Toutes les positions d'une hauteur EXACTE sur le manche (même note, même octave).
+ * Une fréquence ne dit pas sur quelle corde la note est jouée : on montre toutes les possibilités.
+ */
+export function positionsOfMidi(midi: number, tuning: readonly number[] = STANDARD_TUNING, maxFret = 17): { string: number; fret: number }[] {
+  const out: { string: number; fret: number }[] = [];
+  tuning.forEach((open, s) => {
+    const f = midi - open;
+    if (f >= 0 && f <= maxFret) out.push({ string: s, fret: f });
+  });
+  return out;
+}
+
+export type NoteLevel = 'played' | 'chordTone' | 'position' | 'neighbor' | 'context';
+
+/**
+ * Hiérarchie d'affichage d'une note de la gamme, du plus au moins important :
+ * jouée > note de l'accord en cours > position choisie > positions voisines (±2 cases) > contexte.
+ */
+export function noteLevel(
+  n: { string: number; fret: number; midi: number; pc: number },
+  ctx: { playedMidi: number | null; chordPcs: Set<number>; box: Set<string> | null; boxRange: { from: number; to: number } | null },
+): NoteLevel {
+  if (ctx.playedMidi !== null && n.midi === ctx.playedMidi) return 'played';
+  if (ctx.chordPcs.has(n.pc)) return 'chordTone';
+  const key = `${n.string}:${n.fret}`;
+  if (!ctx.box || ctx.box.has(key)) return 'position';
+  if (ctx.boxRange && n.fret >= ctx.boxRange.from - 2 && n.fret <= ctx.boxRange.to + 2) return 'neighbor';
+  return 'context';
+}

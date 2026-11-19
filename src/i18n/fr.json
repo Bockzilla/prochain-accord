@@ -383,5 +383,19 @@
   "gallery.title": "Galerie des mondes",
   "gallery.help": "Les six mondes et les costumes de Pik, pour vérifier le rendu sur votre écran.",
   "gallery.back": "← Retour à l'app",
-  "world.shared1": "(1 note commune)"
+  "world.shared1": "(1 note commune)",
+  "improvise.bandLabel": "Position {n}",
+  "improvise.legendPlayed": "note jouée (toutes ses positions possibles)",
+  "improvise.legendChord": "note de l'accord en cours",
+  "improvise.legendNear": "positions voisines (±2 cases)",
+  "improvise.listening": "À l'écoute : jouez une note à la fois.",
+  "improvise.micHint": "Activez le micro (🎤 en haut) pour voir la note que vous jouez sur le manche.",
+  "improvise.playedIn": "{note} ({cents} cents) — dans la gamme · {n} positions possibles",
+  "improvise.playedChord": "{note} ({cents} cents) — note de l'accord, elle sonne « posée » · {n} positions possibles",
+  "improvise.playedOut": "{note} ({cents} cents) — hors gamme : à utiliser en passage · {n} positions possibles",
+  "improvise.noBand": "Lancez une boucle dans « Accompagner » : les notes de chaque accord seront cerclées ici, en direct.",
+  "improvise.targetsOf": "notes cibles : {notes}",
+  "improvise.targetsWhy": "Les notes cerclées appartiennent à l'accord qui sonne : s'y poser donne une impression de justesse. Les autres notes de la gamme servent à circuler entre elles.",
+  "improvise.targetsWhyOutside": "Les notes cerclées sont celles de l'accord. {notes} n'est pas dans la gamme choisie : jouez-la si vous voulez coller à l'accord (ou changez de gamme).",
+  "beginner.targets": "Avec l'accompagnement, visez les notes cerclées (celles de l'accord en cours) sur les temps forts : c'est le secret d'une impro qui « sonne »."
 }

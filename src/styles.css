@@ -1050,7 +1050,6 @@ svg .nnote:focus-visible rect {
 .lg.note {
   background: var(--beat);
   border-radius: 50%;
-  margin-left: 0.6rem;
 }
 
 .beginner p {
@@ -1933,4 +1932,165 @@ canvas.particles {
 .gallery figcaption {
   padding: 0.6rem 0.8rem;
   font-weight: 700;
+}
+
+/* ===================== V3 : manche intelligent ===================== */
+svg .band-num {
+  font-size: 9px;
+  font-weight: 800;
+}
+
+svg .band rect {
+  opacity: 0.55;
+}
+
+svg .band.sel rect {
+  opacity: 1;
+}
+
+svg .band-zone {
+  fill: rgba(255, 255, 255, 0.04);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+}
+
+svg .nnote.lv-context {
+  opacity: 0.18;
+}
+
+svg .nnote.lv-neighbor {
+  opacity: 0.55;
+}
+
+svg .nnote.lv-chordTone circle,
+svg .nnote.lv-chordTone rect {
+  stroke: #ffffff;
+  stroke-width: 3.5;
+}
+
+svg .nnote.is-played circle,
+svg .nnote.is-played rect {
+  fill: #ffffff;
+  stroke: var(--accent);
+  stroke-width: 4;
+}
+
+svg .nnote.is-played text {
+  fill: #111;
+}
+
+svg .played-ring {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ringPulse 0.9s ease-out infinite;
+}
+
+svg .played-out {
+  fill: #2a2f3a;
+  stroke: var(--bold);
+  stroke-width: 2.5;
+  stroke-dasharray: 3 3;
+}
+
+svg .played-out-label {
+  fill: #fff;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+@keyframes ringPulse {
+  from {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.35);
+    opacity: 0.1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  svg .played-ring {
+    animation: none;
+  }
+}
+
+.played-readout {
+  min-height: 1.5em;
+  font-weight: 700;
+  color: var(--muted);
+  margin: 0.2rem 0.9rem;
+}
+
+.played-readout.on.in {
+  color: var(--beat);
+}
+
+.played-readout.on.chord {
+  color: var(--safe);
+}
+
+.played-readout.on.out {
+  color: var(--bold);
+}
+
+.target-line {
+  padding: 0 0.9rem;
+}
+
+.target-chord {
+  font-weight: 700;
+  margin: 0.2rem 0;
+}
+
+.target-badge {
+  display: inline-block;
+  background: var(--accent);
+  color: var(--accent-text);
+  border-radius: 8px;
+  padding: 0.1rem 0.5rem;
+  font-weight: 900;
+  font-size: 1.2rem;
+  transition: background-color 0.3s;
+}
+
+ul.legend {
+  list-style: none;
+  padding: 0 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.9rem;
+}
+
+ul.legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.lg.played {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--accent);
+}
+
+.lg.chord {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--beat);
+  border: 3px solid #fff;
+}
+
+.lg.near {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--beat);
+  opacity: 0.5;
 }

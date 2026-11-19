@@ -383,5 +383,19 @@
   "gallery.title": "Galería de mundos",
   "gallery.help": "Los seis mundos y los trajes de Pik, para comprobar cómo se ven en tu pantalla.",
   "gallery.back": "← Volver a la app",
-  "world.shared1": "(1 nota común)"
+  "world.shared1": "(1 nota común)",
+  "improvise.bandLabel": "Posición {n}",
+  "improvise.legendPlayed": "nota tocada (todas sus posiciones posibles)",
+  "improvise.legendChord": "nota del acorde actual",
+  "improvise.legendNear": "posiciones vecinas (±2 trastes)",
+  "improvise.listening": "Escuchando: toca una nota a la vez.",
+  "improvise.micHint": "Activa el micrófono (🎤 arriba) para ver en el mástil la nota que tocas.",
+  "improvise.playedIn": "{note} ({cents} cents) — en la escala · {n} posiciones posibles",
+  "improvise.playedChord": "{note} ({cents} cents) — nota del acorde, suena «asentada» · {n} posiciones posibles",
+  "improvise.playedOut": "{note} ({cents} cents) — fuera de la escala: úsala de paso · {n} posiciones posibles",
+  "improvise.noBand": "Inicia un bucle en «Acompañar»: las notas de cada acorde se marcarán aquí, en directo.",
+  "improvise.targetsOf": "notas objetivo: {notes}",
+  "improvise.targetsWhy": "Las notas marcadas pertenecen al acorde que suena: posarse en ellas suena acertado. Las demás notas de la escala sirven para moverse entre ellas.",
+  "improvise.targetsWhyOutside": "Las notas marcadas son las del acorde. {notes} no está en la escala elegida: tócala para ajustarte al acorde (o cambia de escala).",
+  "beginner.targets": "Con el acompañamiento, apunta a las notas marcadas (las del acorde actual) en los tiempos fuertes: ese es el secreto de una improvisación que «suena»."
 }

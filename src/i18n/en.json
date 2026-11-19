@@ -383,5 +383,19 @@
   "gallery.title": "World gallery",
   "gallery.help": "The six worlds and Pik's outfits, to check how they look on your screen.",
   "gallery.back": "← Back to the app",
-  "world.shared1": "(1 shared note)"
+  "world.shared1": "(1 shared note)",
+  "improvise.bandLabel": "Position {n}",
+  "improvise.legendPlayed": "note played (all its possible positions)",
+  "improvise.legendChord": "note of the current chord",
+  "improvise.legendNear": "neighbouring positions (±2 frets)",
+  "improvise.listening": "Listening: play one note at a time.",
+  "improvise.micHint": "Turn on the mic (🎤 at the top) to see the note you play on the neck.",
+  "improvise.playedIn": "{note} ({cents} cents) — in the scale · {n} possible positions",
+  "improvise.playedChord": "{note} ({cents} cents) — chord note, it sounds “settled” · {n} possible positions",
+  "improvise.playedOut": "{note} ({cents} cents) — outside the scale: use it as a passing note · {n} possible positions",
+  "improvise.noBand": "Start a loop in “Backing”: each chord's notes will be circled here, live.",
+  "improvise.targetsOf": "target notes: {notes}",
+  "improvise.targetsWhy": "Circled notes belong to the chord that's sounding: landing on them sounds right. The other scale notes help you move between them.",
+  "improvise.targetsWhyOutside": "Circled notes are the chord's. {notes} isn't in the chosen scale: play it to match the chord closely (or change scale).",
+  "beginner.targets": "With the backing, aim for the circled notes (the current chord's) on strong beats: that's the secret of a solo that “sounds right”."
 }

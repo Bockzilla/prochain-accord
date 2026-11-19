@@ -66,6 +66,7 @@ describe('fichiers de langue', () => {
       ...['guitar', 'chromatic'].map((x) => `tuner.mode.${x}`),
       ...EDGE_KINDS.flatMap((x) => [`edge.${x}`, `edgeWhy.${x}`]),
       ...WORLD_IDS.map((x) => `worldName.${x}`),
+      'improvise.playedIn', 'improvise.playedChord', 'improvise.playedOut',
     ];
     for (const k of [...used, ...dyn]) expect(fr, k).toHaveProperty([k]);
   });
