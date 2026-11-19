@@ -18,3 +18,4 @@ Chaque fichier décrit une décision : le contexte, le choix, et ses conséquenc
 | [012](012-hors-ligne-ignore-vary.md) | Correctif hors ligne (`ignoreVary`) |
 | [013](013-univers-mascotte-themes.md) | Univers harmonique, mascotte et mondes : SVG + Canvas, sans moteur 3D |
 | [014](014-accordeur-profils-calibration.md) | Accordeur YIN, profils mesurés, calibration, entrées audio |
+| [015](015-comptes-local-dabord.md) | Comptes : local d'abord, serveur plus tard, sans facturation maintenant (proposé) |

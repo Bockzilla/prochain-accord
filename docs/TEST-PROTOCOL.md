@@ -1,5 +1,7 @@
 # Protocole de test réel — environ 30 minutes, avec une vraie guitare
 
+> Pressé ? Commencez par le [test rapide de 15 minutes](TEST-GUITARE-RAPIDE.md) (accordeur, Pik, notes, accompagnement). Ce protocole complet sert ensuite à affiner.
+
 Les tests automatiques utilisent des **signaux synthétiques** : ils ne remplacent pas une vraie guitare, un vrai micro de téléphone et une vraie pièce. Ce protocole sert à le vérifier. Notez les résultats dans le tableau à la fin.
 
 ## Préparation (1 min)
@@ -59,7 +61,7 @@ Avec des écouteurs **Bluetooth** : si le cercle s'allume avant d'entendre le cl
 2. Le décompte s'entend, puis la batterie et les accords. L'accord affiché change-t-il au bon moment ?
 3. Improvisez avec la pentatonique de La (Improviser, position 1) : ça sonne « blues » ?
 4. Pause, puis Reprendre : la boucle repart-elle à la mesure où elle s'était arrêtée ?
-5. Sans écouteurs, sur le haut-parleur : l'onglet Jouer doit afficher « Détection en pause ».
+5. Sans écouteurs, Sortie du son = Haut-parleur : un avertissement s'affiche ; la détection continue, mais un accord identique à celui de la boucle est marqué « ≈ probablement l'accompagnement » (comportement V3, ADR 014).
 6. Éteignez l'écran pendant la lecture : l'accompagnement doit se mettre en pause, sans bruit bizarre.
 
 ## H. Comprendre (1 min)

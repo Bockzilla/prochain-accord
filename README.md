@@ -86,7 +86,7 @@ Pour un autre hébergeur (ex. un sous-domaine Hostinger) : `npm run build`, puis
 ## Limites connues
 
 - **Jamais testé avec une vraie guitare par l'auteur du code** : seulement avec des signaux synthétiques. Voir le [protocole de test réel](docs/TEST-PROTOCOL.md). Un test de code qui passe ne prouve pas qu'un accompagnement ou une gamme « sonne bien » : seule l'écoute le dira.
-- Accompagnement sur le haut-parleur : la détection d'accords se met en pause (sinon elle entendrait la boucle). Avec des écouteurs, on peut la garder active.
+- Accompagnement sur le haut-parleur : le micro entend aussi la boucle. La détection continue, mais un accord identique à celui de la boucle est marqué « ≈ accompagnement » et n'entre pas dans l'historique. Avec des écouteurs ou une interface audio, la détection est pleine.
 - L'accompagnement se met en pause quand l'écran s'éteint ou qu'une autre appli passe devant.
 - La mascotte et les animations n'ont pas été observées en mouvement par l'auteur du code (panneau de test masqué) : seules les poses et les images fixes ont été vérifiées.
 - Jazz et Pop sont des mondes visuels : pas encore d'accompagnement dédié.
@@ -98,6 +98,14 @@ Pour un autre hébergeur (ex. un sous-domaine Hostinger) : `npm run build`, puis
 - GitHub Pages ne permet pas d'en-têtes HTTP : la CSP passe par une balise `<meta>`, et `Permissions-Policy` n'est pas envoyé.
 - En 6/8, 7/8 et 12/8, le BPM compte les croches (un cercle = une croche).
 - Si Android met la page en pause (autre appli au premier plan), le métronome se tait au lieu de jouer en rafale ; il reprend sur la grille.
+
+## Feuille de route
+
+Version publiée : **v3.0.0** (étiquette Git). Validation avec une vraie guitare en cours : [test rapide de 15 minutes](docs/TEST-GUITARE-RAPIDE.md).
+
+- [Feuille de route maître](docs/ROADMAP.md) : ordre des étapes et conditions de passage ; prochaine phase **Pratiquer** (débutants de tous âges).
+- [V4 et V4+](docs/ROADMAP-V4.md) : progression, XP, récompenses, costumes, défis ; spectacle virtuel, avatar par caméra, partage familial. Documentées, non développées.
+- [Offre commerciale envisagée](docs/OFFRE-COMMERCIALE.md) (en $ CA, aucune facturation aujourd'hui) et [architecture des comptes](docs/ARCHITECTURE-COMPTES.md) (préparée, non implémentée).
 
 ## Licence
 

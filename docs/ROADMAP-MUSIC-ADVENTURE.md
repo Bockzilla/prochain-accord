@@ -14,6 +14,16 @@ Document vivant, mis à jour pendant l'implémentation.
 
 Point de départ inspecté le 2026-11-19 : commit `913efce` (V2), 144 tests au vert, aucune issue ouverte.
 
+**Version publiée : `v3.0.0`** (étiquette Git sur `5f4398d`, 2026-11-19). Re-vérifié le 2026-11-19 : 189 tests au vert, types OK, CI et CodeQL au vert, build local identique aux fichiers en ligne.
+
+**Validation réelle : en cours.** Procédure : [test rapide 15 min](TEST-GUITARE-RAPIDE.md), puis [protocole complet](TEST-PROTOCOL.md). Les résultats remplissent la colonne « Réel » ci-dessous. La suite (Pratiquer, V4, V4+) est dans la [feuille de route maître](ROADMAP.md).
+
+## Validation réelle — journal
+
+| Date | Appareil / micro | Test | Résultat | Suite donnée |
+|---|---|---|---|---|
+| — | — | en attente des premiers résultats | — | — |
+
 ## Phase A — Fiabilité audio
 
 | Fonction | Statut | Preuve / remarque | Réel |
