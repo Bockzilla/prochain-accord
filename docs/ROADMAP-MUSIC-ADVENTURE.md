@@ -99,10 +99,10 @@ Constats de la phase A :
 
 | Fonction | Statut | Remarque |
 |---|---|---|
-| Tests | TESTED | voir le rapport final (nombre de tests) |
+| Tests | TESTED | 189 tests (15 fichiers), tous au vert ; 144 en V2, aucun cassé |
 | Sécurité (CSP, audit npm, OSV, CodeQL), zéro dépendance ajoutée | TESTED | aucune nouvelle dépendance ; CodeQL relancé en CI |
 | Hors ligne | TESTED | service worker inchangé (correctif V2 conservé) |
-| Déploiement | voir le rapport final | |
+| Déploiement | TESTED | GitHub Pages, CI + CodeQL au vert, 0 alerte de code, 0 alerte Dependabot ; version en ligne vérifiée (HTTPS, CSP, service worker, 11 fichiers en cache) |
 
 ## Reporté explicitement (DEFERRED)
 
